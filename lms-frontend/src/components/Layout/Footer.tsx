@@ -1,11 +1,14 @@
-// Footer component displays the footer section of the application
-// It shows copyright information
+// Footer.tsx
+// This component renders the footer for Cyber College.
+// It appears at the bottom of every page and shows copyright information.
+
+// React functional component for the footer
 const Footer = () => (
   <footer>
-    {/* Copyright notice with the current year */}
-    <p>&copy; {new Date().getFullYear()} LMS. All rights reserved.</p>
+    {/* Copyright notice: updates automatically to the current year */}
+    <p>&copy; {new Date().getFullYear()} Cyber College. All rights reserved.</p>
   </footer>
 );
 
-// Export the Footer component as default
+// Export the Footer component so it can be used in the app layout
 export default Footer;
