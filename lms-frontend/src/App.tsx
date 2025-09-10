@@ -6,8 +6,10 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import CoursePage from './pages/CoursePage';
+import ProfilePage from './pages/ProfilePage';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
+import SupportPage from './pages/SupportPage';
 import './App.css';
 
 // App component is the root component of the LMS frontend
@@ -31,6 +33,10 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           {/* Course detail page route (dynamic by course id) */}
           <Route path="/courses/:id" element={<CoursePage />} />
+          {/* Profile page route */}
+          <Route path="/profile" element={<ProfilePage />} />
+          {/* Support page route */}
+          <Route path="/support" element={<SupportPage />} />
         </Routes>
       </main>
       {/* Footer is always visible at the bottom */}

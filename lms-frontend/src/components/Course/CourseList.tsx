@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 // Hardcoded list of courses for demonstration purposes
 // Each course has an id, title, a detailed description, and a short description
 // (In a real app, this data would come from a backend API)
-const courses = [
+export const courses = [
   {
     id: 1,
     title: 'Computer Science',
