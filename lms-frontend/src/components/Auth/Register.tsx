@@ -32,7 +32,7 @@ const Register = () => {
       ? ''
       : 'Password must be at least 8 characters, include a number, a special character, and a capital letter.';
 
-  // Handler to auto-fill the form with test data
+  // Handler to auto-fill for register tests
   const handleAutoFill = () => {
     setName('Test');
     setEmail('Test@gmail.com');
