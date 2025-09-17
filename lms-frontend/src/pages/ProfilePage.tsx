@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 
 // Import the course data array to get short descriptions
-import { courses as coursesData } from '../components/Course/CourseList';
+
 
 
 
@@ -39,17 +39,11 @@ const ProfilePage: React.FC = () => {
     return () => window.removeEventListener('storage', sync);
   }, []);
 
-  // Helper to get the short description for a course by id
-  const getShortDescription = (id: number) => {
-    // coursesData may be a default export, so handle both default and named
-    const courseArr = Array.isArray((coursesData as any).default) ? (coursesData as any).default : (coursesData as any);
-    const found = courseArr.find((c: any) => c.id === id);
-    return found ? found.shortDescription : '';
-  };
+
 
   // Handler to cancel enrollment
-  const handleCancel = (id: number) => {
-    const updated = enrolledCourses.filter((c: any) => c.id !== id);
+  const handleCancel = (CourseID: number) => {
+    const updated = enrolledCourses.filter((c: any) => c.CourseID !== CourseID);
     setEnrolledCourses(updated);
     sessionStorage.setItem('enrolledCourses', JSON.stringify(updated));
   };
@@ -144,7 +138,7 @@ const ProfilePage: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           {enrolledCourses.map((course: any) => (
             <div
-              key={course.id}
+              key={course.CourseID}
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -158,11 +152,10 @@ const ProfilePage: React.FC = () => {
               }}
             >
               <div style={{ flex: 1, minWidth: 0 }}>
-                <strong style={{ fontSize: '1.15rem', color: '#fff', wordBreak: 'break-word' }}>{course.name}</strong>
-                <div style={{ fontSize: "1rem", color: "#ccc", marginTop: 4, wordBreak: 'break-word' }}>{getShortDescription(course.id)}</div>
+                <strong style={{ fontSize: '1.15rem', color: '#fff', wordBreak: 'break-word' }}>{course.Title}</strong>
               </div>
               <button
-                onClick={() => handleCancel(course.id)}
+                onClick={() => handleCancel(course.CourseID)}
                 style={{
                   minWidth: 140,
                   width: '100%',

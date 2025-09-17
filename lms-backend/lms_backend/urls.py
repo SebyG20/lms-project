@@ -18,8 +18,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from lms.views import CourseListAPIView
+from lms.views import CourseListAPIView, CourseDetailAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/courses/', CourseListAPIView.as_view(), name='course-list'),
+    path('api/courses/<int:CourseID>/', CourseDetailAPIView.as_view(), name='course-detail'),
 ]
