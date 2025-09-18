@@ -44,20 +44,63 @@ const CourseDetail: React.FC = () => {
   }, [course]);
 
   const username = sessionStorage.getItem('username');
+  const [studentId, setStudentId] = useState<string | null>(sessionStorage.getItem('studentId'));
 
-  const handleEnroll = () => {
-    if (!username) return;
+  // Listen for login and update studentId from sessionStorage
+  useEffect(() => {
+    const sync = () => setStudentId(sessionStorage.getItem('studentId'));
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, []);
+
+  const [enrollError, setEnrollError] = useState('');
+  const handleEnroll = async () => {
+    setEnrollError('');
+    // Always re-check sessionStorage for studentId before enrolling
+    const currentStudentId = sessionStorage.getItem('studentId');
+    setStudentId(currentStudentId);
+    if (!username || !currentStudentId || !course) {
+      setEnrollError('You must be logged in to enroll.');
+      return;
+    }
     setEnrolling(true);
-    setTimeout(() => {
-      const stored = sessionStorage.getItem('enrolledCourses');
-      let enrolled = stored ? JSON.parse(stored) : [];
-      if (course && !enrolled.some((c: any) => c.CourseID === course.CourseID)) {
-        enrolled.push({ CourseID: course.CourseID, Title: course.Title, Description: course.Description });
-        sessionStorage.setItem('enrolledCourses', JSON.stringify(enrolled));
-      }
-      setIsEnrolled(true);
+    let enrollments = '';
+    try {
+      const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`);
+      const data = await res.json();
+      enrollments = data.Enrollments || '';
+    } catch (err) {
+      setEnrollError('Failed to fetch enrollments.');
       setEnrolling(false);
-    }, 400);
+      return;
+    }
+    const ids = enrollments ? enrollments.split(',').map((id: string) => id.trim()).filter(Boolean) : [];
+    if (!ids.includes(String(course.CourseID))) {
+      ids.push(String(course.CourseID));
+    }
+    try {
+      const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Enrollments: ids.join(',') })
+      });
+      if (res.ok) {
+        let enrolled = [];
+        try {
+          enrolled = JSON.parse(sessionStorage.getItem('enrolledCourses') || '[]');
+        } catch {}
+        if (course && !enrolled.some((c: any) => c.CourseID === course.CourseID)) {
+          enrolled.push({ CourseID: course.CourseID, Title: course.Title, Description: course.Description });
+          sessionStorage.setItem('enrolledCourses', JSON.stringify(enrolled));
+        }
+        setIsEnrolled(true);
+      } else {
+        setEnrollError('Failed to enroll.');
+      }
+    } catch (err) {
+      setEnrollError('Failed to enroll.');
+    }
+    setEnrolling(false);
   };
 
   if (loading) return <section><h2>Loading...</h2></section>;
@@ -103,31 +146,36 @@ const CourseDetail: React.FC = () => {
               You need to register or login into your account before you can enroll
             </div>
           ) : (
-            <button
-              onClick={handleEnroll}
-              disabled={isEnrolled || enrolling}
-              style={{
-                background: enrolling
-                  ? 'linear-gradient(90deg, #00ff00 50%, #000 50%)'
-                  : isEnrolled
-                  ? '#aaa'
-                  : '#4f8cff',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 6,
-                padding: '0.7rem 0',
-                fontWeight: 700,
-                fontSize: '1.1rem',
-                cursor: isEnrolled ? 'not-allowed' : 'pointer',
-                transition: 'background 0.2s',
-                minWidth: 120,
-                boxShadow: '0 1px 4px #0002',
-                width: '100%',
-                marginBottom: 0,
-              }}
-            >
-              {enrolling ? 'Enrolling...' : isEnrolled ? 'Enrolled' : 'Enroll'}
-            </button>
+            <>
+              <button
+                onClick={handleEnroll}
+                disabled={isEnrolled || enrolling}
+                style={{
+                  background: enrolling
+                    ? 'linear-gradient(90deg, #00ff00 50%, #000 50%)'
+                    : isEnrolled
+                    ? '#aaa'
+                    : '#4f8cff',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '0.7rem 0',
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  cursor: isEnrolled ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.2s',
+                  minWidth: 120,
+                  boxShadow: '0 1px 4px #0002',
+                  width: '100%',
+                  marginBottom: 0,
+                }}
+              >
+                {enrolling ? 'Enrolling...' : isEnrolled ? 'Enrolled' : 'Enroll'}
+              </button>
+              {enrollError && (
+                <div style={{ color: '#ff4d4f', fontSize: '0.95em', marginTop: 8 }}>{enrollError}</div>
+              )}
+            </>
           )}
           <button
             onClick={() => navigate('/dashboard')}

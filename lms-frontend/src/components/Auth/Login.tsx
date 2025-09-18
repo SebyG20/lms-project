@@ -11,12 +11,32 @@ const Login = () => {
   // State to control the visibility of the error message
   const [showError, setShowError] = useState(false);
 
+  // State for form fields
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   // Handler for form submission
-  // Always shows error since accounts are not persisted
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowError(true); // Show error message
-    setTimeout(() => setShowError(false), 1500); // Hide after 1.5s
+    setShowError(false);
+    try {
+      const response = await fetch('http://localhost:8000/api/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Email: email, Password: password })
+      });
+      if (!response.ok) {
+        setShowError(true);
+        return;
+      }
+      const data = await response.json();
+      // Save username and student info to sessionStorage
+      sessionStorage.setItem('username', data.Name);
+      sessionStorage.setItem('studentId', data.StudentID);
+  window.location.replace('/profile');
+    } catch {
+      setShowError(true);
+    }
   };
 
   return (
@@ -25,10 +45,10 @@ const Login = () => {
       <h2>Login</h2>
 
       {/* Email input field */}
-      <input type="email" placeholder="Email" required />
+  <input type="email" placeholder="Email" required value={email} onChange={e => setEmail(e.target.value)} />
 
-      {/* Password input field */}
-      <input type="password" placeholder="Password" required />
+  {/* Password input field */}
+  <input type="password" placeholder="Password" required value={password} onChange={e => setPassword(e.target.value)} />
 
       {/* Login button */}
       <button type="submit">Login</button>

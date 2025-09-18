@@ -40,12 +40,38 @@ const Register = () => {
   };
 
   // Handler for form submission
-  // Saves username to sessionStorage and navigates to profile
-  const handleSubmit = (e: React.FormEvent) => {
+  // POSTs registration data to backend and saves user to sessionStorage
+  const [emailError, setEmailError] = useState('');
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    sessionStorage.setItem('username', name); // Save username for profile
-    window.dispatchEvent(new Event('storage')); // Update Navbar
-    navigate('/profile'); // Redirect to profile page
+    setEmailError('');
+    try {
+      const response = await fetch('http://localhost:8000/api/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Name: name, Email: email, Password: password }),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        if (errorText.includes('already in use')) {
+          setEmailError('This email address is already in use.');
+        } else {
+          alert('Registration failed: ' + errorText);
+        }
+        return;
+      }
+      const data = await response.json();
+      sessionStorage.setItem('username', data.Name); // Save username for profile
+      if (data.StudentID) {
+        sessionStorage.setItem('studentId', data.StudentID);
+      }
+      window.dispatchEvent(new Event('storage'));
+      navigate('/profile');
+    } catch (err) {
+      alert('Registration error: ' + err);
+    }
   };
 
   return (
@@ -69,7 +95,11 @@ const Register = () => {
         required
         value={email}
         onChange={e => setEmail(e.target.value)}
+        style={{ border: emailError ? '2px solid #ff4d4f' : undefined }}
       />
+      {emailError && (
+        <div style={{ color: '#ff4d4f', fontSize: '0.95em', marginBottom: 8 }}>{emailError}</div>
+      )}
 
       {/* Password input field */}
       <input

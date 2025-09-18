@@ -13,39 +13,56 @@ import { useNavigate } from 'react-router-dom';
 
 const ProfilePage: React.FC = () => {
   // Get enrolled courses from localStorage
-  const [enrolledCourses, setEnrolledCourses] = useState(() => {
-    const stored = sessionStorage.getItem('enrolledCourses');
-    return stored ? JSON.parse(stored) : [];
-  });
-
-  // Get username from localStorage
+  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
   const [username] = useState(() => sessionStorage.getItem('username') || '');
+  const studentId = sessionStorage.getItem('studentId');
 
   // Redirect to register if not registered
   const navigate = useNavigate();
   useEffect(() => {
-    if (!username) {
+    if (!username || !studentId) {
       navigate('/register');
+      return;
     }
-  }, [username, navigate]);
+    setEnrolledCourses([]); // Clear enrollments on user change
+    fetchEnrollments(); // Fetch enrollments for the current user
+  }, [username, studentId, navigate]);
 
   // Listen for changes to enrolled courses (in case user enrolls in another tab)
-  React.useEffect(() => {
-    const sync = () => {
-      const stored = sessionStorage.getItem('enrolledCourses');
-      setEnrolledCourses(stored ? JSON.parse(stored) : []);
-    };
-    window.addEventListener('storage', sync);
-    return () => window.removeEventListener('storage', sync);
-  }, []);
+  const fetchEnrollments = () => {
+    if (!studentId) return;
+    fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`)
+      .then(res => res.json())
+      .then(data => {
+        const ids = (data.Enrollments || '').split(',').map((id: string) => id.trim()).filter(Boolean);
+        if (ids.length === 0) {
+          setEnrolledCourses([]);
+          return;
+        }
+        Promise.all(ids.map((id: string) =>
+          fetch(`http://localhost:8000/api/courses/${id}/`).then(res => res.ok ? res.json() : null)
+        )).then(courses => setEnrolledCourses(courses.filter(Boolean)));
+      })
+      .catch(() => setEnrolledCourses([]));
+  };
+
+  useEffect(() => {
+    fetchEnrollments();
+  }, [studentId]);
 
 
 
   // Handler to cancel enrollment
-  const handleCancel = (CourseID: number) => {
+  const handleCancel = async (CourseID: number) => {
+    if (!studentId) return;
     const updated = enrolledCourses.filter((c: any) => c.CourseID !== CourseID);
-    setEnrolledCourses(updated);
-    sessionStorage.setItem('enrolledCourses', JSON.stringify(updated));
+    const updatedIds = updated.map((c: any) => c.CourseID).join(',');
+    await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Enrollments: updatedIds })
+    });
+    fetchEnrollments();
   };
 
   // Handler for logout
