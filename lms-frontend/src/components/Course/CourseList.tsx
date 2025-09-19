@@ -15,10 +15,48 @@ interface CourseListProps {
   useShortDescriptions?: boolean;
 }
 
+
 const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false }) => {
+  // All hooks must be called unconditionally and in the same order
+  const [role, setRole] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteCourseId, setDeleteCourseId] = useState<number | null>(null);
+  const [deleteCourseTitle, setDeleteCourseTitle] = useState<string>('');
+  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
+
+  // Always re-read enrolledCourses from sessionStorage on render
+  useEffect(() => {
+    try {
+      setEnrolledCourses(JSON.parse(sessionStorage.getItem('enrolledCourses') || '[]'));
+    } catch {
+      setEnrolledCourses([]);
+    }
+    // Listen for changes from other tabs/windows
+    const sync = () => {
+      try {
+        setEnrolledCourses(JSON.parse(sessionStorage.getItem('enrolledCourses') || '[]'));
+      } catch {
+        setEnrolledCourses([]);
+      }
+    };
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, []);
+
+  useEffect(() => {
+    const sid = sessionStorage.getItem('studentId');
+    if (sid) {
+      fetch(`http://localhost:8000/api/students/${sid}/`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => setRole(data?.Role || null))
+        .catch(() => setRole(null));
+    } else {
+      setRole(null);
+    }
+  }, []);
 
   useEffect(() => {
     console.log('Fetching courses from API:', API_URL);
@@ -40,6 +78,28 @@ const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false })
       });
   }, []);
 
+  const handleDeleteClick = (courseId: number, title: string) => {
+    setDeleteCourseId(courseId);
+    setDeleteCourseTitle(title);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteCourseId == null) return;
+    const sid = sessionStorage.getItem('studentId');
+    const res = await fetch(`http://localhost:8000/api/courses/${deleteCourseId}/delete/`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ TeacherID: sid })
+    });
+    if (res.ok) {
+      setCourses(courses.filter(c => c.CourseID !== deleteCourseId));
+      setShowDeleteModal(false);
+    } else {
+      alert('Failed to delete course.');
+    }
+  };
+
   if (loading) return <div>Loading courses...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -53,12 +113,68 @@ const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false })
           courses.map(course => (
             <div className="course-card" key={course.CourseID}>
               <h3>{course.Title}</h3>
-              <p>{useShortDescriptions ? '' : course.Description}</p>
+              {/* Hide description on dashboard */}
               <Link className="course-link" to={`/courses/${course.CourseID}`}>View Course</Link>
+              {role === 'teacher' && (
+                <button
+                  style={{
+                    background: '#ff4d4f',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '0.5rem 1rem',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    marginTop: 10,
+                  }}
+                  onClick={() => handleDeleteClick(course.CourseID, course.Title)}
+                >Delete</button>
+              )}
             </div>
           ))
         )}
       </div>
+      {showDeleteModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+        }}>
+          <div style={{
+            background: '#232a3b',
+            borderRadius: 12,
+            padding: '2rem 2.5rem',
+            boxShadow: '0 4px 24px #0004',
+            color: '#fff',
+            minWidth: 320,
+            textAlign: 'center',
+          }}>
+            <h3 style={{ marginBottom: 16 }}>Delete Course</h3>
+            <p style={{ marginBottom: 24 }}>
+              Are you sure you want to delete <span style={{ fontWeight: 700 }}>{deleteCourseTitle}</span>?
+              <br />This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+              <button
+                style={{ background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: 6, padding: '0.6rem 1.2rem', fontWeight: 700, fontSize: '1rem', cursor: 'pointer' }}
+                onClick={handleConfirmDelete}
+              >Delete</button>
+              <button
+                style={{ background: '#4f8cff', color: '#fff', border: 'none', borderRadius: 6, padding: '0.6rem 1.2rem', fontWeight: 700, fontSize: '1rem', cursor: 'pointer' }}
+                onClick={() => setShowDeleteModal(false)}
+              >Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -36,15 +36,45 @@ const CourseDetail: React.FC = () => {
       });
   }, [id]);
 
-  useEffect(() => {
+  // Helper to check enrollment status from sessionStorage
+  const checkEnrollment = React.useCallback(() => {
     if (!course) return;
     const stored = sessionStorage.getItem('enrolledCourses');
     let enrolled = stored ? JSON.parse(stored) : [];
     setIsEnrolled(enrolled.some((c: any) => c.CourseID === course.CourseID));
   }, [course]);
 
+  // Check enrollment on mount and when course changes
+  useEffect(() => {
+    checkEnrollment();
+  }, [course, checkEnrollment]);
+
+  // Listen for sessionStorage changes (from other tabs/pages)
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'enrolledCourses') {
+        checkEnrollment();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, [checkEnrollment]);
+
   const username = sessionStorage.getItem('username');
   const [studentId, setStudentId] = useState<string | null>(sessionStorage.getItem('studentId'));
+  const [role, setRole] = useState<string | null>(null);
+  useEffect(() => {
+    // Fetch role from backend if logged in
+    const sid = sessionStorage.getItem('studentId');
+    if (sid) {
+      fetch(`http://localhost:8000/api/students/${sid}/`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => setRole(data?.Role || null))
+        .catch(() => setRole(null));
+    } else {
+      setRole(null);
+    }
+  }, [studentId]);
 
   // Listen for login and update studentId from sessionStorage
   useEffect(() => {
@@ -56,7 +86,6 @@ const CourseDetail: React.FC = () => {
   const [enrollError, setEnrollError] = useState('');
   const handleEnroll = async () => {
     setEnrollError('');
-    // Always re-check sessionStorage for studentId before enrolling
     const currentStudentId = sessionStorage.getItem('studentId');
     setStudentId(currentStudentId);
     if (!username || !currentStudentId || !course) {
@@ -103,6 +132,62 @@ const CourseDetail: React.FC = () => {
     setEnrolling(false);
   };
 
+  const handleCancelEnrollment = async () => {
+    setEnrollError('');
+    const currentStudentId = sessionStorage.getItem('studentId');
+    setStudentId(currentStudentId);
+    if (!username || !currentStudentId || !course) {
+      setEnrollError('You must be logged in to cancel enrollment.');
+      return;
+    }
+    setEnrolling(true);
+    let enrollments = '';
+    try {
+      const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`);
+      const data = await res.json();
+      enrollments = data.Enrollments || '';
+    } catch (err) {
+      setEnrollError('Failed to fetch enrollments.');
+      setEnrolling(false);
+      return;
+    }
+    let ids = enrollments ? enrollments.split(',').map((id: string) => id.trim()).filter(Boolean) : [];
+    ids = ids.filter((id: string) => id !== String(course.CourseID));
+    try {
+      const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Enrollments: ids.join(',') })
+      });
+      if (res.ok) {
+        let enrolled = [];
+        try {
+          enrolled = JSON.parse(sessionStorage.getItem('enrolledCourses') || '[]');
+        } catch {}
+        enrolled = enrolled.filter((c: any) => c.CourseID !== course.CourseID);
+        sessionStorage.setItem('enrolledCourses', JSON.stringify(enrolled));
+        setIsEnrolled(false);
+      } else {
+        setEnrollError('Failed to cancel enrollment.');
+      }
+    } catch (err) {
+      setEnrollError('Failed to cancel enrollment.');
+    }
+    setEnrolling(false);
+  };
+
+  // Fetch latest enrollments from backend for student
+  useEffect(() => {
+    if (!course || !studentId) return;
+    fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`)
+      .then(res => res.json())
+      .then(data => {
+        const ids = (data.Enrollments || '').split(',').map((id: string) => id.trim()).filter(Boolean);
+        setIsEnrolled(ids.includes(String(course.CourseID)));
+      })
+      .catch(() => setIsEnrolled(false));
+  }, [course, studentId]);
+
   if (loading) return <section><h2>Loading...</h2></section>;
   if (error || !course) return <section><h2>Course Not Found</h2></section>;
 
@@ -145,33 +230,76 @@ const CourseDetail: React.FC = () => {
             }}>
               You need to register or login into your account before you can enroll
             </div>
+          ) : role === 'teacher' ? (
+            <button
+              onClick={() => navigate(`/courses/${course.CourseID}/edit`)}
+              style={{
+                background: '#ffb347',
+                color: '#232a3b',
+                border: 'none',
+                borderRadius: 6,
+                padding: '0.7rem 0',
+                fontWeight: 700,
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+                minWidth: 120,
+                boxShadow: '0 1px 4px #0002',
+                width: '100%',
+                marginBottom: 0,
+              }}
+            >
+              Edit Course
+            </button>
           ) : (
             <>
-              <button
-                onClick={handleEnroll}
-                disabled={isEnrolled || enrolling}
-                style={{
-                  background: enrolling
-                    ? 'linear-gradient(90deg, #00ff00 50%, #000 50%)'
-                    : isEnrolled
-                    ? '#aaa'
-                    : '#4f8cff',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 6,
-                  padding: '0.7rem 0',
-                  fontWeight: 700,
-                  fontSize: '1.1rem',
-                  cursor: isEnrolled ? 'not-allowed' : 'pointer',
-                  transition: 'background 0.2s',
-                  minWidth: 120,
-                  boxShadow: '0 1px 4px #0002',
-                  width: '100%',
-                  marginBottom: 0,
-                }}
-              >
-                {enrolling ? 'Enrolling...' : isEnrolled ? 'Enrolled' : 'Enroll'}
-              </button>
+              {isEnrolled ? (
+                <button
+                  onClick={handleCancelEnrollment}
+                  disabled={enrolling}
+                  style={{
+                    background: '#ff4d4f',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '0.7rem 0',
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    cursor: enrolling ? 'not-allowed' : 'pointer',
+                    transition: 'background 0.2s',
+                    minWidth: 120,
+                    boxShadow: '0 1px 4px #0002',
+                    width: '100%',
+                    marginBottom: 0,
+                  }}
+                >
+                  {enrolling ? 'Cancelling...' : 'Cancel Enrollment'}
+                </button>
+              ) : (
+                <button
+                  onClick={handleEnroll}
+                  disabled={enrolling}
+                  style={{
+                    background: enrolling
+                      ? 'linear-gradient(90deg, #00ff00 50%, #000 50%)'
+                      : '#4f8cff',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '0.7rem 0',
+                    fontWeight: 700,
+                    fontSize: '1.1rem',
+                    cursor: enrolling ? 'not-allowed' : 'pointer',
+                    transition: 'background 0.2s',
+                    minWidth: 120,
+                    boxShadow: '0 1px 4px #0002',
+                    width: '100%',
+                    marginBottom: 0,
+                  }}
+                >
+                  {enrolling ? 'Enrolling...' : 'Enroll'}
+                </button>
+              )}
               {enrollError && (
                 <div style={{ color: '#ff4d4f', fontSize: '0.95em', marginTop: 8 }}>{enrollError}</div>
               )}

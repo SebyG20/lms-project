@@ -1,4 +1,3 @@
-
 // Import necessary modules and components for routing and layout
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
@@ -10,6 +9,9 @@ import ProfilePage from './pages/ProfilePage';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 import SupportPage from './pages/SupportPage';
+import EditCoursePage from './pages/EditCoursePage';
+import CreateCoursePage from './pages/CreateCoursePage';
+import CourseEnrollmentsPage from './pages/CourseEnrollmentsPage';
 import './App.css';
 
 // App component is the root component of the LMS frontend
@@ -33,10 +35,16 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           {/* Course detail page route (dynamic by course id) */}
           <Route path="/courses/:id" element={<CoursePage />} />
+          {/* Course edit page for teachers */}
+          <Route path="/courses/:id/edit" element={<EditCoursePage />} />
+          {/* Create course page for teachers */}
+          <Route path="/courses/create" element={<CreateCoursePage />} />
           {/* Profile page route */}
           <Route path="/profile" element={<ProfilePage />} />
           {/* Support page route */}
           <Route path="/support" element={<SupportPage />} />
+          {/* Enrollments page for teachers to manage enrolled students */}
+          <Route path="/courses/:course_id/enrollments" element={<CourseEnrollmentsPage />} />
         </Routes>
       </main>
       {/* Footer is always visible at the bottom */}

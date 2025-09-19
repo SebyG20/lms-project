@@ -1,4 +1,96 @@
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework import generics
+from .models import Course, Student
+from .serializers import CourseSerializer, StudentSerializer
+from django.conf import settings
+from rest_framework.response import Response
+from rest_framework import status
+
+# API to get all students enrolled in a specific course
+class CourseEnrollmentsAPIView(APIView):
+	def get(self, request, course_id):
+		# Find all students whose Enrollments field contains this course_id
+		enrolled_students = []
+		for student in Student.objects.all():
+			enrolled_ids = [id.strip() for id in (student.Enrollments or '').split(',') if id.strip()]
+			if str(course_id) in enrolled_ids:
+				enrolled_students.append(student)
+		serializer = StudentSerializer(enrolled_students, many=True)
+		return Response({'students': serializer.data})
+
+# API for teachers to delete course
+class CourseDeleteAPIView(APIView):
+	def delete(self, request, CourseID):
+		teacher_id = request.data.get('TeacherID')
+		if not teacher_id:
+			return Response({'error': 'TeacherID required'}, status=status.HTTP_400_BAD_REQUEST)
+		try:
+			teacher = Student.objects.get(StudentID=teacher_id)
+		except Student.DoesNotExist:
+			return Response({'error': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
+		if teacher.Role != 'teacher':
+			return Response({'error': 'Only teachers can delete courses'}, status=status.HTTP_403_FORBIDDEN)
+		try:
+			course = Course.objects.get(CourseID=CourseID)
+		except Course.DoesNotExist:
+			return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+		course.delete()
+		return Response({'success': True}, status=status.HTTP_204_NO_CONTENT)
+from rest_framework.views import APIView
+# API for teachers to create course
+class CourseCreateAPIView(APIView):
+	def post(self, request):
+		teacher_id = request.data.get('TeacherID')
+		if not teacher_id:
+			return Response({'error': 'TeacherID required'}, status=status.HTTP_400_BAD_REQUEST)
+		try:
+			teacher = Student.objects.get(StudentID=teacher_id)
+		except Student.DoesNotExist:
+			return Response({'error': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
+		if teacher.Role != 'teacher':
+			return Response({'error': 'Only teachers can create courses'}, status=status.HTTP_403_FORBIDDEN)
+		title = request.data.get('Title')
+		description = request.data.get('Description', '')
+		if not title:
+			return Response({'error': 'Title required'}, status=status.HTTP_400_BAD_REQUEST)
+		course = Course(Title=title, Description=description)
+		course.save()
+		return Response(CourseSerializer(course).data, status=status.HTTP_201_CREATED)
+from rest_framework.permissions import AllowAny
+from rest_framework import generics
+from rest_framework.views import APIView
+from .models import Course, Student
+from .serializers import CourseSerializer
+from rest_framework.response import Response
+from rest_framework import status
+
+# API for teachers to update course
+class CourseUpdateAPIView(APIView):
+	def put(self, request, CourseID):
+		# Only allow teachers to update
+		teacher_id = request.data.get('TeacherID')
+		if not teacher_id:
+			return Response({'error': 'TeacherID required'}, status=status.HTTP_400_BAD_REQUEST)
+		try:
+			teacher = Student.objects.get(StudentID=teacher_id)
+		except Student.DoesNotExist:
+			return Response({'error': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
+		if teacher.Role != 'teacher':
+			return Response({'error': 'Only teachers can edit courses'}, status=status.HTTP_403_FORBIDDEN)
+		try:
+			course = Course.objects.get(CourseID=CourseID)
+		except Course.DoesNotExist:
+			return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+		title = request.data.get('Title')
+		description = request.data.get('Description')
+		if title:
+			course.Title = title
+		if description is not None:
+			course.Description = description
+		course.save()
+		return Response(CourseSerializer(course).data, status=status.HTTP_200_OK)
+from rest_framework.views import APIView
 # Login API for students
 class StudentLoginAPIView(APIView):
 	def post(self, request):

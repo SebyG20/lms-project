@@ -1,3 +1,9 @@
 import CourseDetail from '../components/Course/CourseDetail';
-const CoursePage = () => <CourseDetail />;
+import { useParams } from 'react-router-dom';
+
+const CoursePage = () => {
+	const { id } = useParams();
+	return <CourseDetail key={id} />;
+};
+
 export default CoursePage;
