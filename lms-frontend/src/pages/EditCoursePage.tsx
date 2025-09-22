@@ -33,10 +33,12 @@ const EditCoursePage: React.FC = () => {
     setError('');
     try {
       const sid = sessionStorage.getItem('studentId');
+      // Send TeacherID for teacher, AdminID for admin (both use StudentID)
+      const payload = { Title: title, Description: description, TeacherID: sid };
       const res = await fetch(`http://localhost:8000/api/courses/${id}/edit/`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ Title: title, Description: description, TeacherID: sid })
+        body: JSON.stringify(payload)
       });
       if (res.ok) {
         navigate(`/courses/${id}`);

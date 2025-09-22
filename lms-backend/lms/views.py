@@ -29,8 +29,8 @@ class CourseDeleteAPIView(APIView):
 			teacher = Student.objects.get(StudentID=teacher_id)
 		except Student.DoesNotExist:
 			return Response({'error': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
-		if teacher.Role != 'teacher':
-			return Response({'error': 'Only teachers can delete courses'}, status=status.HTTP_403_FORBIDDEN)
+		if teacher.Role not in ['teacher', 'admin']:
+			return Response({'error': 'Only teachers or admins can delete courses'}, status=status.HTTP_403_FORBIDDEN)
 		try:
 			course = Course.objects.get(CourseID=CourseID)
 		except Course.DoesNotExist:
@@ -48,8 +48,8 @@ class CourseCreateAPIView(APIView):
 			teacher = Student.objects.get(StudentID=teacher_id)
 		except Student.DoesNotExist:
 			return Response({'error': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
-		if teacher.Role != 'teacher':
-			return Response({'error': 'Only teachers can create courses'}, status=status.HTTP_403_FORBIDDEN)
+		if teacher.Role not in ['teacher', 'admin']:
+			return Response({'error': 'Only teachers or admins can create courses'}, status=status.HTTP_403_FORBIDDEN)
 		title = request.data.get('Title')
 		description = request.data.get('Description', '')
 		if not title:
@@ -76,8 +76,8 @@ class CourseUpdateAPIView(APIView):
 			teacher = Student.objects.get(StudentID=teacher_id)
 		except Student.DoesNotExist:
 			return Response({'error': 'Teacher not found'}, status=status.HTTP_404_NOT_FOUND)
-		if teacher.Role != 'teacher':
-			return Response({'error': 'Only teachers can edit courses'}, status=status.HTTP_403_FORBIDDEN)
+		if teacher.Role not in ['teacher', 'admin']:
+			return Response({'error': 'Only teachers or admins can edit courses'}, status=status.HTTP_403_FORBIDDEN)
 		try:
 			course = Course.objects.get(CourseID=CourseID)
 		except Course.DoesNotExist:
@@ -124,6 +124,13 @@ class StudentListAPIView(APIView):
 		return Response(serializer.data)
 
 class StudentDetailAPIView(APIView):
+	def delete(self, request, student_id):
+		try:
+			student = Student.objects.get(StudentID=student_id)
+		except Student.DoesNotExist:
+			return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+		student.delete()
+		return Response({'success': True}, status=status.HTTP_204_NO_CONTENT)
 	def get(self, request, student_id):
 		try:
 			student = Student.objects.get(StudentID=student_id)
@@ -131,6 +138,28 @@ class StudentDetailAPIView(APIView):
 			return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
 		serializer = StudentSerializer(student)
 		return Response(serializer.data)
+
+	def put(self, request, student_id):
+		try:
+			student = Student.objects.get(StudentID=student_id)
+		except Student.DoesNotExist:
+			return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+		serializer = StudentSerializer(student, data=request.data, partial=True)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def patch(self, request, student_id):
+		try:
+			student = Student.objects.get(StudentID=student_id)
+		except Student.DoesNotExist:
+			return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+		serializer = StudentSerializer(student, data=request.data, partial=True)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CourseListAPIView(generics.ListAPIView):
 	queryset = Course.objects.all()
@@ -154,8 +183,9 @@ class StudentRegisterAPIView(APIView):
 			return Response({'Email': ['This email address is already in use.']}, status=status.HTTP_400_BAD_REQUEST)
 		serializer = StudentSerializer(data=request.data)
 		if serializer.is_valid():
-			# Set role to student by default
-			serializer.save(Role='student')
+			# Accept role from request, default to student
+			role = request.data.get('Role', 'student')
+			serializer.save(Role=role)
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

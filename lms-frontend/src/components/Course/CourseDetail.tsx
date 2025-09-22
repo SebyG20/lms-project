@@ -230,27 +230,65 @@ const CourseDetail: React.FC = () => {
             }}>
               You need to register or login into your account before you can enroll
             </div>
-          ) : role === 'teacher' ? (
-            <button
-              onClick={() => navigate(`/courses/${course.CourseID}/edit`)}
-              style={{
-                background: '#ffb347',
-                color: '#232a3b',
-                border: 'none',
-                borderRadius: 6,
-                padding: '0.7rem 0',
-                fontWeight: 700,
-                fontSize: '1.1rem',
-                cursor: 'pointer',
-                transition: 'background 0.2s',
-                minWidth: 120,
-                boxShadow: '0 1px 4px #0002',
-                width: '100%',
-                marginBottom: 0,
-              }}
-            >
-              Edit Course
-            </button>
+          ) : (role === 'teacher' || role === 'admin') ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <button
+                onClick={() => navigate(`/courses/${course.CourseID}/edit`)}
+                style={{
+                  background: '#ffb347',
+                  color: '#232a3b',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '0.7rem 0',
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                  minWidth: 120,
+                  boxShadow: '0 1px 4px #0002',
+                  width: '100%',
+                  marginBottom: 0,
+                }}
+              >
+                Edit Course
+              </button>
+              <button
+                onClick={async () => {
+                  if (!studentId) return;
+                  // Send TeacherID for teacher, AdminID for admin (both use StudentID)
+                  const payload = role === 'admin'
+                    ? { TeacherID: studentId } // backend expects TeacherID, so send StudentID for admin too
+                    : { TeacherID: studentId };
+                  const res = await fetch(`http://localhost:8000/api/courses/${course.CourseID}/delete/`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                  });
+                  if (res.ok || res.status === 204) {
+                    navigate('/dashboard');
+                  } else {
+                    alert('Failed to delete course.');
+                  }
+                }}
+                style={{
+                  background: '#ff4d4f',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '0.7rem 0',
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                  minWidth: 120,
+                  boxShadow: '0 1px 4px #0002',
+                  width: '100%',
+                  marginBottom: 0,
+                }}
+              >
+                Delete Course
+              </button>
+            </div>
           ) : (
             <>
               {isEnrolled ? (

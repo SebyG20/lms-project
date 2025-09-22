@@ -12,6 +12,7 @@ import SupportPage from './pages/SupportPage';
 import EditCoursePage from './pages/EditCoursePage';
 import CreateCoursePage from './pages/CreateCoursePage';
 import CourseEnrollmentsPage from './pages/CourseEnrollmentsPage';
+import UsersPage from './pages/UsersPage';
 import './App.css';
 
 // App component is the root component of the LMS frontend
@@ -45,6 +46,8 @@ function App() {
           <Route path="/support" element={<SupportPage />} />
           {/* Enrollments page for teachers to manage enrolled students */}
           <Route path="/courses/:course_id/enrollments" element={<CourseEnrollmentsPage />} />
+          {/* Users page route for admin user management */}
+          <Route path="/users" element={<UsersPage />} />
         </Routes>
       </main>
       {/* Footer is always visible at the bottom */}

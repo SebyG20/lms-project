@@ -115,7 +115,7 @@ const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false })
               <h3>{course.Title}</h3>
               {/* Hide description on dashboard */}
               <Link className="course-link" to={`/courses/${course.CourseID}`}>View Course</Link>
-              {role === 'teacher' && (
+              {(role === 'teacher' || role === 'admin') && (
                 <button
                   style={{
                     background: '#ff4d4f',

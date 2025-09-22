@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -8,6 +9,19 @@ const CourseEnrollmentsPage: React.FC = () => {
   const courseName = location.state?.courseName || '';
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const sid = sessionStorage.getItem('studentId');
+    if (sid) {
+      fetch(`http://localhost:8000/api/students/${sid}/`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => setRole(data?.Role || null))
+        .catch(() => setRole(null));
+    } else {
+      setRole(null);
+    }
+  }, []);
 
   useEffect(() => {
     if (!course_id) return;
@@ -50,12 +64,14 @@ const CourseEnrollmentsPage: React.FC = () => {
           {students.map((student: any) => (
             <li key={student.StudentID} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <span>{student.Username || student.Name || `ID: ${student.StudentID}`}</span>
-              <button
-                onClick={() => handleTerminate(student.StudentID)}
-                style={{ background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1rem', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginLeft: 16 }}
-              >
-                Terminate
-              </button>
+              {(role === 'teacher' || role === 'admin') && (
+                <button
+                  onClick={() => handleTerminate(student.StudentID)}
+                  style={{ background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1rem', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginLeft: 16 }}
+                >
+                  Terminate
+                </button>
+              )}
             </li>
           ))}
         </ul>

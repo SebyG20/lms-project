@@ -21,7 +21,7 @@ const ProfilePage: React.FC = () => {
   }, [username, userId, navigate]);
 
   useEffect(() => {
-    if (role === 'teacher') {
+    if (role === 'teacher' || role === 'admin') {
       fetch(`http://localhost:8000/api/courses/`)
         .then(res => res.json())
         .then(data => setCourses(data))
@@ -129,7 +129,7 @@ const ProfilePage: React.FC = () => {
           Log Out
         </button>
       </div>
-      {role === 'teacher' ? (
+  {(role === 'teacher' || role === 'admin') ? (
         <>
           <h3 style={{ color: '#4f8cff', marginBottom: '1.5rem', fontWeight: 700 }}>All Courses</h3>
           {courses.length === 0 ? (
