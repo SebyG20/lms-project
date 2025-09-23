@@ -7,7 +7,7 @@ from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
 
-# API to get all students enrolled in a specific course
+# CourseEnrollmentsAPIView: Get all students enrolled in a specific course
 class CourseEnrollmentsAPIView(APIView):
 	def get(self, request, course_id):
 		# Find all students whose Enrollments field contains this course_id
@@ -19,7 +19,7 @@ class CourseEnrollmentsAPIView(APIView):
 		serializer = StudentSerializer(enrolled_students, many=True)
 		return Response({'students': serializer.data})
 
-# API for teachers to delete course
+# CourseDeleteAPIView: Allow teachers/admins to delete a course
 class CourseDeleteAPIView(APIView):
 	def delete(self, request, CourseID):
 		teacher_id = request.data.get('TeacherID')
@@ -37,8 +37,8 @@ class CourseDeleteAPIView(APIView):
 			return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
 		course.delete()
 		return Response({'success': True}, status=status.HTTP_204_NO_CONTENT)
-from rest_framework.views import APIView
-# API for teachers to create course
+
+# CourseCreateAPIView: Allow teachers/admins to create a course
 class CourseCreateAPIView(APIView):
 	def post(self, request):
 		teacher_id = request.data.get('TeacherID')
@@ -57,7 +57,6 @@ class CourseCreateAPIView(APIView):
 		course = Course(Title=title, Description=description)
 		course.save()
 		return Response(CourseSerializer(course).data, status=status.HTTP_201_CREATED)
-from rest_framework.permissions import AllowAny
 from rest_framework import generics
 from rest_framework.views import APIView
 from .models import Course, Student

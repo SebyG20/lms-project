@@ -1,3 +1,7 @@
+// CourseList.tsx
+// This component displays a list of all available courses.
+// Teachers and admins can delete courses from here.
+
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 
@@ -10,42 +14,26 @@ type Course = {
 
 const API_URL = 'http://localhost:8000/api/courses/'; // Update if your backend runs elsewhere
 
-
 interface CourseListProps {
   useShortDescriptions?: boolean;
 }
 
-
-const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false }) => {
-  // All hooks must be called unconditionally and in the same order
+const CourseList: React.FC<CourseListProps> = () => {
+  // State for current user's role
   const [role, setRole] = useState<string | null>(null);
+  // State for all courses
   const [courses, setCourses] = useState<Course[]>([]);
+  // State for loading indicator
   const [loading, setLoading] = useState(true);
+  // State for error message
   const [error, setError] = useState<string | null>(null);
+  // State for delete modal visibility
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // State for course to delete
   const [deleteCourseId, setDeleteCourseId] = useState<number | null>(null);
   const [deleteCourseTitle, setDeleteCourseTitle] = useState<string>('');
-  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
 
-  // Always re-read enrolledCourses from sessionStorage on render
-  useEffect(() => {
-    try {
-      setEnrolledCourses(JSON.parse(sessionStorage.getItem('enrolledCourses') || '[]'));
-    } catch {
-      setEnrolledCourses([]);
-    }
-    // Listen for changes from other tabs/windows
-    const sync = () => {
-      try {
-        setEnrolledCourses(JSON.parse(sessionStorage.getItem('enrolledCourses') || '[]'));
-      } catch {
-        setEnrolledCourses([]);
-      }
-    };
-    window.addEventListener('storage', sync);
-    return () => window.removeEventListener('storage', sync);
-  }, []);
-
+  // Fetch current user's role on mount
   useEffect(() => {
     const sid = sessionStorage.getItem('studentId');
     if (sid) {
@@ -58,32 +46,35 @@ const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false })
     }
   }, []);
 
+  // Fetch all courses on mount
   useEffect(() => {
-    console.log('Fetching courses from API:', API_URL);
     fetch(API_URL)
       .then((res) => {
-        console.log('API response status:', res.status);
         if (!res.ok) throw new Error('Failed to fetch courses');
         return res.json();
       })
       .then((data) => {
-        console.log('Fetched courses:', data);
         setCourses(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Error fetching courses:', err.message);
         setError(err.message);
         setLoading(false);
       });
   }, []);
 
+  /**
+   * Opens the delete modal for a course.
+   */
   const handleDeleteClick = (courseId: number, title: string) => {
     setDeleteCourseId(courseId);
     setDeleteCourseTitle(title);
     setShowDeleteModal(true);
   };
 
+  /**
+   * Confirms course deletion and removes course from backend and UI.
+   */
   const handleConfirmDelete = async () => {
     if (deleteCourseId == null) return;
     const sid = sessionStorage.getItem('studentId');
@@ -100,11 +91,13 @@ const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false })
     }
   };
 
+  // Render loading/error states and course list
   if (loading) return <div>Loading courses...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="course-list">
+      {/* Page title */}
       <h2 className="course-list-title">Available Courses</h2>
       <div className="course-grid">
         {courses.length === 0 ? (
@@ -113,8 +106,9 @@ const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false })
           courses.map(course => (
             <div className="course-card" key={course.CourseID}>
               <h3>{course.Title}</h3>
-              {/* Hide description on dashboard */}
+              {/* Link to course details */}
               <Link className="course-link" to={`/courses/${course.CourseID}`}>View Course</Link>
+              {/* Delete button for teachers/admins */}
               {(role === 'teacher' || role === 'admin') && (
                 <button
                   style={{
@@ -135,6 +129,7 @@ const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false })
           ))
         )}
       </div>
+      {/* Delete confirmation modal */}
       {showDeleteModal && (
         <div style={{
           position: 'fixed',
@@ -179,4 +174,5 @@ const CourseList: React.FC<CourseListProps> = ({ useShortDescriptions = false })
   );
 };
 
+// Export the component for use in dashboard/pages
 export default CourseList;

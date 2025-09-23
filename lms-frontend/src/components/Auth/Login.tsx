@@ -6,7 +6,10 @@
 
 import React, { useState } from 'react';
 
-// Login functional component
+/**
+ * Login component
+ * Handles user login, error display, and navigation to registration.
+ */
 const Login = () => {
   // State to control the visibility of the error message
   const [showError, setShowError] = useState(false);
@@ -16,7 +19,9 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Handler for form submission
+  /**
+   * Handles login form submission and authentication.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowError(false);
@@ -34,7 +39,7 @@ const Login = () => {
       // Save username and student info to sessionStorage
       sessionStorage.setItem('username', data.Name);
       sessionStorage.setItem('studentId', data.StudentID);
-  window.location.replace('/profile');
+      window.location.replace('/profile');
     } catch {
       setShowError(true);
     }
@@ -46,51 +51,51 @@ const Login = () => {
       <h2>Login</h2>
 
       {/* Email input field */}
-  <input type="email" placeholder="Email" required value={email} onChange={e => setEmail(e.target.value)} />
+      <input type="email" placeholder="Email" required value={email} onChange={e => setEmail(e.target.value)} />
 
-  {/* Password input field with show/hide button */}
-  <div style={{ position: 'relative', marginBottom: 12, width: '100%' }}>
-    <input
-      type={showPassword ? "text" : "password"}
-      placeholder="Password"
-      required
-      value={password}
-      onChange={e => setPassword(e.target.value)}
-      style={{
-        width: '100%',
-        boxSizing: 'border-box',
-        paddingRight: 60,
-        height: 40,
-        borderRadius: 6,
-        border: '1px solid #222',
-        background: '#181c23',
-        color: '#fff',
-        fontSize: 16,
-      }}
-    />
-    <button
-      type="button"
-      onClick={() => setShowPassword(v => !v)}
-      style={{
-        position: 'absolute',
-        right: 16,
-        top: 0,
-        height: '100%',
-        background: 'none',
-        color: '#5b8cff',
-        border: 'none',
-        borderRadius: 0,
-        padding: 0,
-        fontWeight: 500,
-        fontSize: 15,
-        cursor: 'pointer',
-        boxShadow: 'none',
-        outline: 'none',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >{showPassword ? 'Hide' : 'Show'}</button>
-  </div>
+      {/* Password input field with show/hide button */}
+      <div style={{ position: 'relative', marginBottom: 12, width: '100%' }}>
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          required
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          style={{
+            width: '100%',
+            boxSizing: 'border-box',
+            paddingRight: 60,
+            height: 40,
+            borderRadius: 6,
+            border: '1px solid #222',
+            background: '#181c23',
+            color: '#fff',
+            fontSize: 16,
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(v => !v)}
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: 0,
+            height: '100%',
+            background: 'none',
+            color: '#5b8cff',
+            border: 'none',
+            borderRadius: 0,
+            padding: 0,
+            fontWeight: 500,
+            fontSize: 15,
+            cursor: 'pointer',
+            boxShadow: 'none',
+            outline: 'none',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >{showPassword ? 'Hide' : 'Show'}</button>
+      </div>
 
       {/* Login button */}
       <button type="submit">Login</button>

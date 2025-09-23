@@ -1,3 +1,5 @@
 from django.test import TestCase
 
-# Create your tests here.
+# tests.py
+# This file contains unit tests for the LMS Django app.
+# Add test cases for models, views, and API endpoints here.

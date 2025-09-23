@@ -7,7 +7,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Register functional component
+/**
+ * Register component
+ * Handles user registration, validation, autofill, and navigation to login.
+ */
 const Register = () => {
   // React Router's navigation hook
   const navigate = useNavigate();
@@ -32,16 +35,20 @@ const Register = () => {
       ? ''
       : 'Password must be at least 8 characters, include a number, a special character, and a capital letter.';
 
-  // Handler to auto-fill for register tests
+  /**
+   * Autofill handler for test registration data.
+   */
   const handleAutoFill = () => {
     setName('Test');
     setEmail('Test@gmail.com');
     setPassword('Test123!');
   };
 
-  // Handler for form submission
-  // POSTs registration data to backend and saves user to sessionStorage
+  // State for email error message
   const [emailError, setEmailError] = useState('');
+  /**
+   * Handles registration form submission and user creation.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setEmailError('');

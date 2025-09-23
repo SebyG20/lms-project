@@ -1,4 +1,6 @@
-
+// DashboardPage.tsx
+// This page displays the dashboard for the logged-in user, based on their role.
+// Admins see course management and user management options, teachers see course management, students see their dashboard.
 
 import React, { useEffect, useState } from 'react';
 import StudentDashboard from '../components/Dashboard/StudentDashboard';
@@ -6,8 +8,12 @@ import CourseList from '../components/Course/CourseList';
 import { useNavigate } from 'react-router-dom';
 
 const DashboardPage: React.FC = () => {
+	// State for user role
 	const [role, setRole] = useState<string | null>(null);
+	// React Router navigation hook
 	const navigate = useNavigate();
+
+	// Fetch user role on mount
 	useEffect(() => {
 		const sid = sessionStorage.getItem('studentId');
 		if (sid) {
@@ -20,12 +26,15 @@ const DashboardPage: React.FC = () => {
 		}
 	}, []);
 
+	// Admin dashboard view
 	if (role === 'admin') {
 		return (
 			<section>
+				{/* Admin header and actions */}
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
 					<h2>Admin Dashboard</h2>
 					<div style={{ display: 'flex', gap: 12 }}>
+						{/* Add course button */}
 						<button
 							style={{
 								background: '#4f8cff',
@@ -41,6 +50,7 @@ const DashboardPage: React.FC = () => {
 						>
 							Add Course
 						</button>
+						{/* Manage users button */}
 						<button
 							style={{
 								background: '#ffb347',
@@ -58,6 +68,7 @@ const DashboardPage: React.FC = () => {
 						</button>
 					</div>
 				</div>
+				{/* Courses section */}
 				<div style={{ marginTop: 24 }}>
 					<h3>All Courses</h3>
 					<div>
@@ -67,11 +78,14 @@ const DashboardPage: React.FC = () => {
 			</section>
 		);
 	}
+	// Teacher dashboard view
 	if (role === 'teacher') {
 		return (
 			<section>
+				{/* Teacher header and actions */}
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
 					<h2>Teacher Dashboard</h2>
+					{/* Add course button */}
 					<button
 						style={{
 							background: '#4f8cff',
@@ -88,6 +102,7 @@ const DashboardPage: React.FC = () => {
 						Add Course
 					</button>
 				</div>
+				{/* Courses section */}
 				<div style={{ marginTop: 24 }}>
 					<h3>All Courses</h3>
 					<div>
@@ -97,6 +112,7 @@ const DashboardPage: React.FC = () => {
 			</section>
 		);
 	}
+	// Student dashboard view
 	return <StudentDashboard />;
 };
 

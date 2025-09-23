@@ -1,33 +1,48 @@
+// ProfilePage.tsx
+// This page displays the user's profile, including their name, role, and courses.
+// Students see their enrolled courses, teachers/admins see all courses. All users can edit their profile or log out.
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
 const ProfilePage: React.FC = () => {
+  // State for all courses (for teachers/admins)
   const [courses, setCourses] = useState<any[]>([]);
+  // State for enrolled courses (for students)
   const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
+  // Username from sessionStorage
   const [username] = useState(() => sessionStorage.getItem('username') || '');
+  // User ID from sessionStorage
   const userId = sessionStorage.getItem('studentId');
+  // State for user role
   const [role, setRole] = useState<string | null>(null);
+  // React Router navigation hook
   const navigate = useNavigate();
 
+  // Fetch user role on mount
   useEffect(() => {
     if (!username || !userId) {
+      // If no user info, redirect to register page
       navigate('/register');
       return;
     }
+    // Fetch user data from backend
     fetch(`http://localhost:8000/api/students/${userId}/`)
       .then(res => res.ok ? res.json() : null)
       .then(data => setRole(data?.Role || null))
       .catch(() => setRole(null));
   }, [username, userId, navigate]);
 
+  // Fetch courses based on user role
   useEffect(() => {
     if (role === 'teacher' || role === 'admin') {
+      // Teachers/Admins: fetch all courses
       fetch(`http://localhost:8000/api/courses/`)
         .then(res => res.json())
         .then(data => setCourses(data))
         .catch(() => setCourses([]));
     } else if (role === 'student') {
-      // Fetch enrolled courses for student
+      // Students: fetch enrolled courses
       fetch(`http://localhost:8000/api/students/${userId}/enrollments/`)
         .then(res => res.json())
         .then(data => {
@@ -36,6 +51,7 @@ const ProfilePage: React.FC = () => {
             setEnrolledCourses([]);
             return;
           }
+          // Fetch course details for each enrolled course
           Promise.all(ids.map((id: string) =>
             fetch(`http://localhost:8000/api/courses/${id}/`).then(res => res.ok ? res.json() : null)
           )).then(courses => setEnrolledCourses(courses.filter(Boolean)));
@@ -44,17 +60,23 @@ const ProfilePage: React.FC = () => {
     }
   }, [role, userId]);
 
+  /**
+   * Logs out the user by clearing sessionStorage and navigating to home.
+   */
   const handleLogout = () => {
     sessionStorage.clear();
     window.dispatchEvent(new Event('storage'));
     navigate('/');
   };
 
-  // Teacher: go to enrolls page for course
+  /**
+   * Navigates to the enrollments page for a given course (for teachers/admins).
+   */
   const handleViewEnrollsPage = (courseId: number, courseName: string) => {
     navigate(`/courses/${courseId}/enrollments`, { state: { courseName } });
   };
 
+  // Render the profile page UI
   return (
     <div
       className="profile-container"
@@ -70,6 +92,7 @@ const ProfilePage: React.FC = () => {
         minWidth: 0,
       }}
     >
+      {/* User info and actions */}
       <div
         style={{
           display: 'flex',
@@ -90,6 +113,7 @@ const ProfilePage: React.FC = () => {
             flexWrap: 'wrap',
           }}
         >
+          {/* User avatar and name */}
           <img
             src="https://api.dicebear.com/7.x/thumbs/svg?seed="
             style={{ width: 72, height: 72, borderRadius: '50%', background: '#232a3b', border: '3px solid #4f8cff', minWidth: 72 }}
@@ -108,28 +132,50 @@ const ProfilePage: React.FC = () => {
             {username}
           </h2>
         </div>
-        <button
-          onClick={handleLogout}
-          style={{
-            background: '#232a3b',
-            color: '#fff',
-            border: '2px solid #4f8cff',
-            borderRadius: 6,
-            padding: '0.6rem 1.4rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-            fontSize: '1rem',
-            transition: 'background 0.2s',
-            marginTop: 8,
-            flex: '0 0 auto',
-            width: '100%',
-            maxWidth: 180,
-          }}
-        >
-          Log Out
-        </button>
+        {/* Edit profile and logout buttons */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-end', flex: '0 0 auto', width: '100%', maxWidth: 180 }}>
+          <button
+            onClick={() => navigate('/edit-profile')}
+            style={{
+              background: '#4f8cff',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              padding: '0.6rem 1.4rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontSize: '1rem',
+              transition: 'background 0.2s',
+              marginTop: 8,
+              width: '100%',
+              maxWidth: 180,
+            }}
+          >
+            Edit Profile
+          </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              background: '#232a3b',
+              color: '#fff',
+              border: '2px solid #4f8cff',
+              borderRadius: 6,
+              padding: '0.6rem 1.4rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontSize: '1rem',
+              transition: 'background 0.2s',
+              marginTop: 0,
+              width: '100%',
+              maxWidth: 180,
+            }}
+          >
+            Log Out
+          </button>
+        </div>
       </div>
-  {(role === 'teacher' || role === 'admin') ? (
+      {/* Courses section for teachers/admins */}
+      {(role === 'teacher' || role === 'admin') ? (
         <>
           <h3 style={{ color: '#4f8cff', marginBottom: '1.5rem', fontWeight: 700 }}>All Courses</h3>
           {courses.length === 0 ? (
@@ -184,6 +230,7 @@ const ProfilePage: React.FC = () => {
         </>
       ) : role === 'student' ? (
         <>
+          {/* Courses section for students */}
           <h3 style={{ color: '#4f8cff', marginBottom: '1.5rem', fontWeight: 700 }}>Enrolled Courses</h3>
           {enrolledCourses.length === 0 ? (
             <p style={{ color: '#ccc', fontSize: '1.1rem' }}>You haven't enrolled in any courses yet.</p>

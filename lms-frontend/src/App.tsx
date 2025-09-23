@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import CoursePage from './pages/CoursePage';
 import ProfilePage from './pages/ProfilePage';
+import EditProfilePage from './pages/EditProfilePage';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 import SupportPage from './pages/SupportPage';
@@ -42,6 +43,8 @@ function App() {
           <Route path="/courses/create" element={<CreateCoursePage />} />
           {/* Profile page route */}
           <Route path="/profile" element={<ProfilePage />} />
+          {/* Edit profile page route */}
+          <Route path="/edit-profile" element={<EditProfilePage />} />
           {/* Support page route */}
           <Route path="/support" element={<SupportPage />} />
           {/* Enrollments page for teachers to manage enrolled students */}

@@ -1,10 +1,8 @@
 """
 ASGI config for lms_backend project.
 
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
+This file exposes the ASGI callable for async deployment and running the Django app.
+See Django docs: https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
 import os
