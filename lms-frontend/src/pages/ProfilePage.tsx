@@ -3,6 +3,7 @@
 // Students see their enrolled courses, teachers/admins see all courses. All users can edit their profile or log out.
 
 import React, { useState, useEffect } from "react";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 import { useNavigate } from 'react-router-dom';
 
 const ProfilePage: React.FC = () => {
@@ -27,7 +28,8 @@ const ProfilePage: React.FC = () => {
       return;
     }
     // Fetch user data from backend
-    fetch(`http://localhost:8000/api/students/${userId}/`)
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  fetch(`${API_BASE}/api/students/${userId}/`)
       .then(res => res.ok ? res.json() : null)
       .then(data => setRole(data?.Role || null))
       .catch(() => setRole(null));
@@ -37,13 +39,13 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     if (role === 'teacher' || role === 'admin') {
       // Teachers/Admins: fetch all courses
-      fetch(`http://localhost:8000/api/courses/`)
+  fetch(`${API_BASE}/api/courses/`)
         .then(res => res.json())
         .then(data => setCourses(data))
         .catch(() => setCourses([]));
     } else if (role === 'student') {
       // Students: fetch enrolled courses
-      fetch(`http://localhost:8000/api/students/${userId}/enrollments/`)
+  fetch(`${API_BASE}/api/students/${userId}/enrollments/`)
         .then(res => res.json())
         .then(data => {
           const ids = (data.Enrollments || '').split(',').map((id: string) => id.trim()).filter(Boolean);
@@ -53,7 +55,7 @@ const ProfilePage: React.FC = () => {
           }
           // Fetch course details for each enrolled course
           Promise.all(ids.map((id: string) =>
-            fetch(`http://localhost:8000/api/courses/${id}/`).then(res => res.ok ? res.json() : null)
+            fetch(`${API_BASE}/api/courses/${id}/`).then(res => res.ok ? res.json() : null)
           )).then(courses => setEnrolledCourses(courses.filter(Boolean)));
         })
         .catch(() => setEnrolledCourses([]));

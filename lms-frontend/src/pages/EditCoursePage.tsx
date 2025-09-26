@@ -5,7 +5,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:8000/api/courses/';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_URL = `${API_BASE}/api/courses/`;
 
 const EditCoursePage: React.FC = () => {
   // Get course ID from URL params
@@ -27,7 +28,7 @@ const EditCoursePage: React.FC = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`${API_URL}${id}/`)
+  fetch(`${API_URL}${id}/`)
       .then(res => res.ok ? res.json() : Promise.reject('Course not found'))
       .then(data => {
         setTitle(data.Title);
@@ -53,7 +54,7 @@ const EditCoursePage: React.FC = () => {
       // Prepare payload for backend (TeacherID is always studentId)
       const payload = { Title: title, Description: description, TeacherID: sid };
       // Send PUT request to backend API
-      const res = await fetch(`http://localhost:8000/api/courses/${id}/edit/`, {
+  const res = await fetch(`${API_BASE}/api/courses/${id}/edit/`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

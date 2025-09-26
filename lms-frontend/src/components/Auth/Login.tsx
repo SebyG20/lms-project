@@ -26,7 +26,8 @@ const Login = () => {
     e.preventDefault();
     setShowError(false);
     try {
-      const response = await fetch('http://localhost:8000/api/login/', {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  const response = await fetch(`${API_BASE}/api/login/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ Email: email, Password: password })

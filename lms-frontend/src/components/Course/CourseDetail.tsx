@@ -7,7 +7,8 @@ type Course = {
   Description: string;
 };
 
-const API_URL = 'http://localhost:8000/api/courses/';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_URL = `${API_BASE}/api/courses/`;
 
 const CourseDetail: React.FC = () => {
   const { id } = useParams();
@@ -67,7 +68,7 @@ const CourseDetail: React.FC = () => {
     // Fetch role from backend if logged in
     const sid = sessionStorage.getItem('studentId');
     if (sid) {
-      fetch(`http://localhost:8000/api/students/${sid}/`)
+  fetch(`${API_BASE}/api/students/${sid}/`)
         .then(res => res.ok ? res.json() : null)
         .then(data => setRole(data?.Role || null))
         .catch(() => setRole(null));
@@ -95,7 +96,7 @@ const CourseDetail: React.FC = () => {
     setEnrolling(true);
     let enrollments = '';
     try {
-      const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`);
+  const res = await fetch(`${API_BASE}/api/students/${studentId}/enrollments/`);
       const data = await res.json();
       enrollments = data.Enrollments || '';
     } catch (err) {
@@ -108,7 +109,7 @@ const CourseDetail: React.FC = () => {
       ids.push(String(course.CourseID));
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`, {
+  const res = await fetch(`${API_BASE}/api/students/${studentId}/enrollments/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ Enrollments: ids.join(',') })
@@ -179,7 +180,7 @@ const CourseDetail: React.FC = () => {
   // Fetch latest enrollments from backend for student
   useEffect(() => {
     if (!course || !studentId) return;
-    fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`)
+  fetch(`${API_BASE}/api/students/${studentId}/enrollments/`)
       .then(res => res.json())
       .then(data => {
         const ids = (data.Enrollments || '').split(',').map((id: string) => id.trim()).filter(Boolean);
@@ -259,7 +260,7 @@ const CourseDetail: React.FC = () => {
                   const payload = role === 'admin'
                     ? { TeacherID: studentId } // backend expects TeacherID, so send StudentID for admin too
                     : { TeacherID: studentId };
-                  const res = await fetch(`http://localhost:8000/api/courses/${course.CourseID}/delete/`, {
+                  const res = await fetch(`${API_BASE}/api/courses/${course.CourseID}/delete/`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

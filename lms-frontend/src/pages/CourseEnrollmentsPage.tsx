@@ -4,6 +4,7 @@
 // Teachers and admins can terminate enrollments from here.
 
 import React, { useEffect, useState } from "react";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 const CourseEnrollmentsPage: React.FC = () => {
@@ -24,7 +25,8 @@ const CourseEnrollmentsPage: React.FC = () => {
   useEffect(() => {
     const sid = sessionStorage.getItem('studentId');
     if (sid) {
-      fetch(`http://localhost:8000/api/students/${sid}/`)
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  fetch(`${API_BASE}/api/students/${sid}/`)
         .then(res => res.ok ? res.json() : null)
         .then(data => setRole(data?.Role || null))
         .catch(() => setRole(null));
@@ -36,7 +38,7 @@ const CourseEnrollmentsPage: React.FC = () => {
   // Fetch students enrolled in the course
   useEffect(() => {
     if (!course_id) return;
-    fetch(`http://localhost:8000/api/courses/${course_id}/enrollments/`)
+  fetch(`${API_BASE}/api/courses/${course_id}/enrollments/`)
       .then(res => res.json())
       .then(data => {
         setStudents(data.students || []);
@@ -54,13 +56,13 @@ const CourseEnrollmentsPage: React.FC = () => {
    */
   const handleTerminate = async (studentId: number) => {
     // Fetch current enrollments for student
-    const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`);
+  const res = await fetch(`${API_BASE}/api/students/${studentId}/enrollments/`);
     const data = await res.json();
     let ids = (data.Enrollments || '').split(',').map((id: string) => id.trim()).filter(Boolean);
     // Remove this course from the student's enrollments
     ids = ids.filter((id: string) => id !== course_id);
     // Update enrollments in backend
-    await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`, {
+  await fetch(`${API_BASE}/api/students/${studentId}/enrollments/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ Enrollments: ids.join(',') })

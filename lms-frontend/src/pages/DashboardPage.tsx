@@ -3,6 +3,7 @@
 // Admins see course management and user management options, teachers see course management, students see their dashboard.
 
 import React, { useEffect, useState } from 'react';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 import StudentDashboard from '../components/Dashboard/StudentDashboard';
 import CourseList from '../components/Course/CourseList';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +18,8 @@ const DashboardPage: React.FC = () => {
 	useEffect(() => {
 		const sid = sessionStorage.getItem('studentId');
 		if (sid) {
-			fetch(`http://localhost:8000/api/students/${sid}/`)
+			const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+			fetch(`${API_BASE}/api/students/${sid}/`)
 				.then(res => res.ok ? res.json() : null)
 				.then(data => setRole(data?.Role || null))
 				.catch(() => setRole(null));

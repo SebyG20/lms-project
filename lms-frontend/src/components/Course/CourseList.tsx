@@ -12,7 +12,8 @@ type Course = {
   Description: string;
 };
 
-const API_URL = 'http://localhost:8000/api/courses/'; // Update if your backend runs elsewhere
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_URL = `${API_BASE}/api/courses/`;
 
 interface CourseListProps {
   useShortDescriptions?: boolean;
@@ -37,7 +38,7 @@ const CourseList: React.FC<CourseListProps> = () => {
   useEffect(() => {
     const sid = sessionStorage.getItem('studentId');
     if (sid) {
-      fetch(`http://localhost:8000/api/students/${sid}/`)
+  fetch(`${API_BASE}/api/students/${sid}/`)
         .then(res => res.ok ? res.json() : null)
         .then(data => setRole(data?.Role || null))
         .catch(() => setRole(null));
@@ -78,7 +79,7 @@ const CourseList: React.FC<CourseListProps> = () => {
   const handleConfirmDelete = async () => {
     if (deleteCourseId == null) return;
     const sid = sessionStorage.getItem('studentId');
-    const res = await fetch(`http://localhost:8000/api/courses/${deleteCourseId}/delete/`, {
+  const res = await fetch(`${API_BASE}/api/courses/${deleteCourseId}/delete/`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ TeacherID: sid })

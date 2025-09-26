@@ -53,7 +53,8 @@ const Register = () => {
     e.preventDefault();
     setEmailError('');
     try {
-      const response = await fetch('http://localhost:8000/api/register/', {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  const response = await fetch(`${API_BASE}/api/register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

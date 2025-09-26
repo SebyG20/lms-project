@@ -3,6 +3,7 @@
 // It handles table rendering, modals for editing/enrollments/deletion, and all CRUD logic.
 
 import React, { useEffect, useState } from "react";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 import { useNavigate } from "react-router-dom";
 
 const UsersPage: React.FC = () => {
@@ -55,7 +56,8 @@ const UsersPage: React.FC = () => {
 		e.preventDefault();
 		if (!selectedUser) return;
 		try {
-			const res = await fetch(`http://localhost:8000/api/students/${selectedUser.StudentID}/`, {
+			const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+			const res = await fetch(`${API_BASE}/api/students/${selectedUser.StudentID}/`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -96,7 +98,7 @@ const UsersPage: React.FC = () => {
 			return;
 		}
 		const courses = await Promise.all(ids.map((id: string) =>
-			fetch(`http://localhost:8000/api/courses/${id}/`).then(res => res.ok ? res.json() : null)
+			fetch(`${API_BASE}/api/courses/${id}/`).then(res => res.ok ? res.json() : null)
 		));
 		setEnrollmentsCourses(courses.filter(Boolean));
 		setShowEnrollmentsModal(true);
@@ -120,7 +122,7 @@ const UsersPage: React.FC = () => {
 	const confirmDeleteUser = async () => {
 		if (!userToDelete) return;
 		try {
-			const res = await fetch(`http://localhost:8000/api/students/${userToDelete.StudentID}/`, {
+			const res = await fetch(`${API_BASE}/api/students/${userToDelete.StudentID}/`, {
 				method: 'DELETE',
 			});
 			if (res.ok) {
@@ -139,7 +141,7 @@ const UsersPage: React.FC = () => {
 	useEffect(() => {
 		const sid = sessionStorage.getItem("studentId");
 		if (sid) {
-			fetch(`http://localhost:8000/api/students/${sid}/`)
+			fetch(`${API_BASE}/api/students/${sid}/`)
 				.then((res) => (res.ok ? res.json() : null))
 				.then((data) => setRole(data?.Role || null))
 				.catch(() => setRole(null));
@@ -158,7 +160,7 @@ const UsersPage: React.FC = () => {
 	// Fetch all users for admin
 	useEffect(() => {
 		if (role === "admin") {
-			fetch("http://localhost:8000/api/students/")
+			fetch(`${API_BASE}/api/students/`)
 				.then(res => res.json())
 				.then(data => {
 					setUsers(data);

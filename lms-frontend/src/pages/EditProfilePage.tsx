@@ -3,6 +3,7 @@
 // It fetches the current user data, handles form state, password visibility toggle, error handling, and saves changes to the backend.
 
 import React, { useState, useEffect } from "react";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 import { useNavigate } from 'react-router-dom';
 
 const EditProfilePage: React.FC = () => {
