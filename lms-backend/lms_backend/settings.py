@@ -63,7 +63,7 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
 CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
 # Allow all Vercel frontend deployments (wildcard subdomains)
-CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://lms-frontend-[a-z0-9\-]+-sebys-projects-a1745c7c\.vercel\.app$"]
+CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://.*\\.vercel\\.app$"]
 
 ROOT_URLCONF = 'lms_backend.urls'
 
