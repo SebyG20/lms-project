@@ -60,7 +60,7 @@ MIDDLEWARE = [
 ]
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
+CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,https://lms-frontend-one-tan.vercel.app,https://lms-frontend-fr8ustilt-sebys-projects-a1745c7c.vercel.app').split(',')
 
 ROOT_URLCONF = 'lms_backend.urls'
 
