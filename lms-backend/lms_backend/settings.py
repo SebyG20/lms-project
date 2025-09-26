@@ -63,7 +63,9 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
 CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',') if os.environ.get('CORS_ALLOWED_ORIGINS') else []
 # Allow all Vercel frontend deployments (wildcard subdomains)
-CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://.*\\.vercel\\.app$"]
+# Read regexes from environment variable if set, else default to Vercel wildcard
+import re
+CORS_ALLOWED_ORIGIN_REGEXES = os.environ.get('CORS_ALLOWED_ORIGIN_REGEXES', r'^https://.*\.vercel\.app$').split(',')
 
 # Fallback for local dev if not allowing all origins and no origins set
 if not CORS_ALLOW_ALL_ORIGINS and not CORS_ALLOWED_ORIGINS:
