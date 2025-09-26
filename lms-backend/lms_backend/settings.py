@@ -63,7 +63,7 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
 CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',') if os.environ.get('CORS_ALLOWED_ORIGINS') else []
 
-# No regexes; only use CORS_ALLOWED_ORIGINS from env
+# Only use CORS_ALLOWED_ORIGINS from env
 CORS_ALLOWED_ORIGIN_REGEXES = []
 
 # Fallback for local dev if not allowing all origins and no origins set
