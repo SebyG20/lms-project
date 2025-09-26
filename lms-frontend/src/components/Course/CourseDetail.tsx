@@ -144,7 +144,7 @@ const CourseDetail: React.FC = () => {
     setEnrolling(true);
     let enrollments = '';
     try {
-      const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`);
+  const res = await fetch(`${API_BASE}/api/students/${studentId}/enrollments/`);
       const data = await res.json();
       enrollments = data.Enrollments || '';
     } catch (err) {
@@ -155,7 +155,7 @@ const CourseDetail: React.FC = () => {
     let ids = enrollments ? enrollments.split(',').map((id: string) => id.trim()).filter(Boolean) : [];
     ids = ids.filter((id: string) => id !== String(course.CourseID));
     try {
-      const res = await fetch(`http://localhost:8000/api/students/${studentId}/enrollments/`, {
+  const res = await fetch(`${API_BASE}/api/students/${studentId}/enrollments/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ Enrollments: ids.join(',') })

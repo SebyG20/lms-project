@@ -28,7 +28,7 @@ const EditProfilePage: React.FC = () => {
       return;
     }
     // Fetch user data from backend
-    fetch(`http://localhost:8000/api/students/${userId}/`)
+  fetch(`${API_BASE}/api/students/${userId}/`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) {
@@ -57,7 +57,7 @@ const EditProfilePage: React.FC = () => {
     e.preventDefault();
     if (!userId) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/students/${userId}/`, {
+  const res = await fetch(`${API_BASE}/api/students/${userId}/`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
