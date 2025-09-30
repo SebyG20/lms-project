@@ -4,6 +4,7 @@
 
 /**
  * Footer component
+ * Displays copyright notice for Cyber College.
  */
 const Footer = () => (
   <footer></footer>

@@ -1,3 +1,210 @@
+/* Hide columns on mobile */
+@media (max-width: 600px) {
+  th.hide-mobile, td.hide-mobile {
+    display: none !important;
+  }
+}
+/* Responsive table and container styles for all pages/roles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 480px;
+}
+th, td {
+  padding: 0.7rem;
+  word-break: normal;
+  white-space: nowrap;
+  text-align: left;
+  vertical-align: middle;
+}
+.table-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+@media (max-width: 600px) {
+  .table-container {
+    max-width: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    padding-bottom: 0.5rem;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 0.5rem;
+    box-shadow: none;
+  }
+  .table-container table {
+    max-width: 100%;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    min-width: 0 !important;
+    overflow-x: hidden;
+    table-layout: fixed;
+  }
+  table {
+    min-width: 480px;
+    width: 100%;
+  }
+  th, td {
+    padding: 0.3rem 0.2rem;
+    font-size: 0.85rem;
+    word-break: normal;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .course-list, .course-grid, .course-card, main, section, form, footer {
+    max-width: 100vw;
+    width: 100vw;
+    box-sizing: border-box;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+  }
+  main {
+    padding: 1rem 0.2rem !important;
+  }
+  footer {
+    padding: 1rem 0.2rem !important;
+    text-align: center;
+  }
+  .table-container button, .table-container .course-link {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+    min-width: 48px;
+  }
+  body {
+    overflow-x: hidden;
+  }
+}
+.course-list-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #4f8cff;
+}
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+}
+/* Responsive styles for mobile devices (max-width: 600px) */
+@media (max-width: 600px) {
+  /* Stack navbar links vertically and reduce spacing */
+  nav {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 0.5rem;
+    font-size: 1rem;
+  }
+  /* Reduce main content padding */
+  main {
+    padding: 1rem 0.2rem;
+  }
+  /* Reduce course list padding */
+  .course-list {
+    padding: 0 0.2rem;
+  }
+  /* Show one course per row on small screens */
+  .course-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  /* Reduce padding for course cards */
+  .course-card {
+    padding: 1.2rem 0.7rem;
+  }
+  /* Make forms and sections fit the screen width */
+  form {
+    padding: 1.2rem 0.7rem;
+    max-width: 98vw;
+  }
+  section {
+    padding: 1.2rem 0.7rem;
+    max-width: 98vw;
+  }
+}
+body {
+  background: #181c24;
+  color: #e0e6ed;
+}
+main {
+  padding: 2rem;
+  min-height: 80vh;
+}
+nav {
+  display: flex;
+  gap: 1.5rem;
+  background: #232a3b;
+  color: #fff;
+  padding: 1.2rem 2rem;
+  align-items: center;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+nav a {
+  color: #e0e6ed;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+nav a:hover {
+  color: #4f8cff;
+}
+footer {
+  display: none;
+}
+.course-list {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.course-list-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #4f8cff;
+}
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+}
+.course-card {
+  background: #232a3b;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: transform 0.15s;
+}
+.course-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 4px 18px rgba(79,140,255,0.10);
+}
+.course-card h3 {
+  margin: 0 0 0.5rem 0;
+  color: #e0e6ed;
+}
+.course-card p {
+  flex: 1;
+}
+.course-link {
+  background: #204080;
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s;
+  box-shadow: 0 1px 4px rgba(32,64,128,0.10);
+}
+.course-link:hover {
+  background: #4f8cff;
+  color: #181c24;
+}
 .course-list {
   width: 100%;
   max-width: 900px;

@@ -19,7 +19,6 @@
 }
 /* Responsive styles for mobile devices (max-width: 600px) */
 @media (max-width: 600px) {
-  /* Reduce heading font sizes for small screens */
   h1 {
     font-size: 2em;
   }
@@ -29,14 +28,14 @@
   h3 {
     font-size: 1.1em;
   }
-  /* Make forms and sections fit the screen width */
-  form {
-    padding: 1.2rem 0.7rem;
-    max-width: 98vw;
-  }
-  section {
-    padding: 1.2rem 0.7rem;
-    max-width: 98vw;
+  form, section, main, .table-container, table {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0.2rem;
   }
 }
 
