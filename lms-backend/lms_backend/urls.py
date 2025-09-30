@@ -7,11 +7,12 @@ See Django docs for details: https://docs.djangoproject.com/en/5.2/topics/http/u
 
 from django.contrib import admin
 from django.urls import path
-from lms.views import health_check, CourseListAPIView, StudentListAPIView
+from lms.views import health_check, CourseListAPIView, StudentListAPIView, StudentLoginAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/health/', health_check, name='health-check'),
     path('api/courses/', CourseListAPIView.as_view(), name='course-list'),
     path('api/students/', StudentListAPIView.as_view(), name='student-list'),
+    path('api/login/', StudentLoginAPIView.as_view(), name='student-login'),
 ]
