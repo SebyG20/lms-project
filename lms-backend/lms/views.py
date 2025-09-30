@@ -1,3 +1,9 @@
+from rest_framework.decorators import api_view
+
+# Health check endpoint
+@api_view(['GET'])
+def health_check(request):
+	return Response({"status": "ok"})
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework import generics
