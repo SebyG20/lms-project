@@ -6,11 +6,7 @@ import React, { useEffect, useState } from "react";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 import { useNavigate } from "react-router-dom";
 
-interface UsersPageProps {
-	fullTable?: boolean;
-}
-
-const UsersPage: React.FC<UsersPageProps> = ({ fullTable = false }) => {
+const UsersPage: React.FC = () => {
 	// State for all users
 	const [users, setUsers] = useState<any[]>([]);
 	// State for loading indicator
@@ -178,66 +174,62 @@ const UsersPage: React.FC<UsersPageProps> = ({ fullTable = false }) => {
 	}, [role, navigate]);
 
 	// Render the users management table and modals
-		return (
-			<>
-				<div style={{ maxWidth: fullTable ? 1200 : 900, margin: "2rem auto", color: "#fff", background: '#232a3b', borderRadius: 12, boxShadow: '0 4px 24px #0002', padding: fullTable ? '1.2rem 0.5rem' : '2.5rem 2rem', width: fullTable ? '99vw' : '95vw', minWidth: 0 }}>
-					{/* Page title */}
-					<h2 style={{ color: '#4f8cff', fontWeight: 700, marginBottom: 24 }}>{fullTable ? 'All Users Table' : 'Users Management'}</h2>
-					{/* Back button for full table view */}
-					{fullTable && (
-						<button style={{ marginBottom: 16, background: '#4f8cff', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1.2rem', fontWeight: 700, minWidth: 70 }} onClick={() => navigate('/users')}>Back</button>
-					)}
-					{/* Loading and error states */}
-					{loading ? (
-						<p>Loading...</p>
-					) : error ? (
-						<p style={{ color: '#ff4d4f' }}>{error}</p>
-					) : (
-						<table style={{ width: '100%', borderCollapse: 'collapse', background: '#181c23', borderRadius: 8 }}>
-							<thead>
-								<tr style={{ color: '#4f8cff', fontWeight: 700 }}>
-									<th style={{ padding: '0.7rem' }}>ID</th>
-									<th style={{ padding: '0.7rem' }}>Name</th>
-									<th style={{ padding: '0.7rem' }}>Email</th>
-									<th style={{ padding: '0.7rem' }}>Password</th>
-									<th style={{ padding: '0.7rem' }}>Role</th>
-									<th style={{ padding: '0.7rem' }}>Enrollments</th>
-									<th style={{ padding: '0.7rem' }}>Actions</th>
+	return (
+		<>
+			<div style={{ maxWidth: 900, margin: "2rem auto", color: "#fff", background: '#232a3b', borderRadius: 12, boxShadow: '0 4px 24px #0002', padding: '2.5rem 2rem', width: '95vw', minWidth: 0 }}>
+				{/* Page title */}
+				<h2 style={{ color: '#4f8cff', fontWeight: 700, marginBottom: 24 }}>Users Management</h2>
+				{/* Loading and error states */}
+				{loading ? (
+					<p>Loading...</p>
+				) : error ? (
+					<p style={{ color: '#ff4d4f' }}>{error}</p>
+				) : (
+					<table style={{ width: '100%', borderCollapse: 'collapse', background: '#181c23', borderRadius: 8 }}>
+						<thead>
+							<tr style={{ color: '#4f8cff', fontWeight: 700 }}>
+								<th style={{ padding: '0.7rem' }}>ID</th>
+								<th style={{ padding: '0.7rem' }}>Name</th>
+								<th style={{ padding: '0.7rem' }}>Email</th>
+								<th style={{ padding: '0.7rem' }}>Password</th>
+								<th style={{ padding: '0.7rem' }}>Role</th>
+								<th style={{ padding: '0.7rem' }}>Enrollments</th>
+								<th style={{ padding: '0.7rem' }}>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{users.map((user: any) => (
+								<tr key={user.StudentID} style={{ background: '#181c23', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
+									<td style={{ padding: '0.9rem 0.7rem', borderRadius: '8px 0 0 8px' }}>{user.StudentID}</td>
+									<td style={{ padding: '0.9rem 0.7rem' }}>{user.Name}</td>
+									<td style={{ padding: '0.9rem 0.7rem' }}>{user.Email}</td>
+									<td style={{ padding: '0.9rem 0.7rem' }}>{user.Password}</td>
+									<td style={{ padding: '0.9rem 0.7rem' }}>{user.Role}</td>
+									<td style={{ padding: '0.9rem 0.7rem', textAlign: 'center' }}>
+										{/* Enrollments button opens enrollments modal */}
+										<button
+											style={{ background: '#4f8cff', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1.2rem', fontWeight: 700, marginRight: 0, minWidth: 110 }}
+											onClick={() => handleShowEnrollments(user)}
+										>Enrollments</button>
+									</td>
+									<td style={{ padding: '0.9rem 0.7rem', textAlign: 'center', borderRadius: '0 8px 8px 0' }}>
+										{/* Edit and delete buttons open respective modals */}
+										<button
+											style={{ background: '#4f8cff', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1.2rem', fontWeight: 700, marginRight: 8, minWidth: 70 }}
+											onClick={() => handleEditClick(user)}
+										>Edit</button>
+										<button
+											style={{ background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1.2rem', fontWeight: 700, minWidth: 70 }}
+											onClick={() => handleDeleteUser(user)}
+										>Delete</button>
+									</td>
 								</tr>
-							</thead>
-							<tbody>
-								{users.map((user: any) => (
-									<tr key={user.StudentID} style={{ background: '#181c23', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
-										<td style={{ padding: '0.9rem 0.7rem', borderRadius: '8px 0 0 8px' }}>{user.StudentID}</td>
-										<td style={{ padding: '0.9rem 0.7rem' }}>{user.Name}</td>
-										<td style={{ padding: '0.9rem 0.7rem' }}>{user.Email}</td>
-										<td style={{ padding: '0.9rem 0.7rem' }}>{user.Password}</td>
-										<td style={{ padding: '0.9rem 0.7rem' }}>{user.Role}</td>
-										<td style={{ padding: '0.9rem 0.7rem', textAlign: 'center' }}>
-											{/* Enrollments button opens enrollments modal */}
-											<button
-												style={{ background: '#4f8cff', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1.2rem', fontWeight: 700, marginRight: 0, minWidth: 110 }}
-												onClick={() => handleShowEnrollments(user)}
-											>Enrollments</button>
-										</td>
-										<td style={{ padding: '0.9rem 0.7rem', textAlign: 'center', borderRadius: '0 8px 8px 0' }}>
-											{/* Edit and delete buttons open respective modals */}
-											<button
-												style={{ background: '#4f8cff', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1.2rem', fontWeight: 700, marginRight: 8, minWidth: 70 }}
-												onClick={() => handleEditClick(user)}
-											>Edit</button>
-											<button
-												style={{ background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: 6, padding: '0.5rem 1.2rem', fontWeight: 700, minWidth: 70 }}
-												onClick={() => handleDeleteUser(user)}
-											>Delete</button>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					)}
-					{/* TODO: Add create user form */}
-				</div>
+							))}
+						</tbody>
+					</table>
+				)}
+				{/* TODO: Add create user form */}
+			</div>
 					{showEnrollmentsModal && (
 						<div style={{
 							position: 'fixed',

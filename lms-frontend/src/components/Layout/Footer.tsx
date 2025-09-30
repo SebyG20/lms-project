@@ -4,9 +4,13 @@
 
 /**
  * Footer component
+ * Displays copyright notice for Cyber College.
  */
 const Footer = () => (
-  <footer></footer>
+  <footer>
+    {/* Copyright notice: updates automatically to the current year */}
+    <p>&copy; {new Date().getFullYear()} Cyber College. All rights reserved.</p>
+  </footer>
 );
 
 // Export the Footer component for use in the app layout

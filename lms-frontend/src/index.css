@@ -1,22 +1,3 @@
-@media (max-width: 600px) {
-  .dashboard-card, .course-card, .course-list, section {
-    max-width: 320px !important;
-    width: 100% !important;
-    margin: 0 auto !important;
-    padding: 0.7rem 0.5rem !important;
-    font-size: 0.95rem !important;
-    box-sizing: border-box;
-  }
-  button {
-    font-size: 0.95rem !important;
-    padding: 0.4rem 0.7rem !important;
-    min-width: 60px !important;
-  }
-  h2, h3 {
-    font-size: 1.05rem !important;
-    margin-bottom: 0.7rem !important;
-  }
-}
 /* Responsive styles for mobile devices (max-width: 600px) */
 @media (max-width: 600px) {
   /* Reduce heading font sizes for small screens */
