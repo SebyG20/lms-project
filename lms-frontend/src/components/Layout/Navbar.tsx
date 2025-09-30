@@ -28,7 +28,7 @@ const Navbar = () => {
       style={{
         display: 'flex',
         alignItems: 'center',
-        width: '100%',
+        width: '100vw',
         background: '#23293a',
         padding: '20px 16px 10px 16px',
         borderTopLeftRadius: 8,
@@ -36,20 +36,18 @@ const Navbar = () => {
         minHeight: 60,
         position: 'relative',
         flexWrap: 'wrap',
+        boxSizing: 'border-box',
+        overflowX: 'auto',
       }}
     >
-      {/* Main navigation links */}
-      <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: 20, minWidth: 0 }}>
+      {/* Main navigation links including Support */}
+      <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: 20, minWidth: 0, flexWrap: 'wrap' }}>
         <Link to="/" style={{ fontWeight: 'bold', fontSize: '1.15em', marginRight: 20, color: '#fff', textDecoration: 'none', whiteSpace: 'nowrap' }}>Home</Link>
         <Link to="/dashboard" style={{ marginRight: 20, color: '#bfcfff', textDecoration: 'none', whiteSpace: 'nowrap' }}>Dashboard</Link>
         {!hasProfile && <Link to="/register" style={{ marginRight: 20, color: '#bfcfff', textDecoration: 'none', whiteSpace: 'nowrap' }}>Register</Link>}
         {hasProfile && <Link to="/profile" style={{ marginRight: 20, color: '#bfcfff', textDecoration: 'none', whiteSpace: 'nowrap' }}>Profile</Link>}
-      </div>
-      {/* Support link */}
-      <div style={{ marginLeft: 4, flexShrink: 0 }}>
         <Link to="/support" style={{ fontWeight: 600, color: '#5b8cff', fontSize: '1.08em', textDecoration: 'none', marginLeft: 0, whiteSpace: 'nowrap' }}>Support</Link>
       </div>
-
       {/* Responsive styles for mobile and hover effect for nav links */}
       <style>{`
         nav a {
@@ -63,21 +61,25 @@ const Navbar = () => {
             flex-direction: column !important;
             align-items: stretch !important;
             padding: 12px 2vw 6px 2vw !important;
+            width: 100vw !important;
+            min-width: 0 !important;
+            overflow-x: hidden !important;
           }
           nav > div {
+            flex-wrap: wrap !important;
             justify-content: flex-start !important;
             gap: 10px !important;
+            width: 100vw !important;
+            min-width: 0 !important;
           }
           nav a {
             font-size: 15px !important;
             margin: 0 0 0 0 !important;
             padding: 6px 4px !important;
             display: inline-block !important;
-          }
-          nav > div:last-child {
-            margin-right: 0 !important;
-            margin-left: 0 !important;
-            align-self: flex-end !important;
+            min-width: 0 !important;
+            max-width: 100vw !important;
+            box-sizing: border-box !important;
           }
         }
       `}</style>

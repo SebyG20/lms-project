@@ -3,16 +3,16 @@ from django.db import models
 
 # Course model: represents a course in the LMS
 class Course(models.Model):
-	CourseID = models.AutoField(primary_key=True, db_column='CourseID')  # Unique course ID
-	Title = models.CharField(max_length=255, db_column='Title')  # Course title
-	Description = models.TextField(db_column='Description', blank=True, null=True)  # Optional description
+		CourseID = models.AutoField(primary_key=True, db_column='CourseID')  # Unique course ID
+		Title = models.CharField(max_length=255, db_column='Title')  # Course title
+		Description = models.TextField(db_column='Description', blank=True, null=True)  # Optional description
 
-	class Meta:
-		db_table = 'courses'
-		managed = False  # Don't let Django manage the table (no migrations)
+		class Meta:
+			db_table = 'courses'
+			managed = True  # Let Django manage the table (needed for tests)
 
-	def __str__(self):
-		return self.Title
+		def __str__(self):
+			return self.Title
 
 # Student model: persistent user accounts and enrollments
 class Student(models.Model):

@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'courses',
-                'managed': False,
+                'managed': True,
             },
         ),
         # Create Student table

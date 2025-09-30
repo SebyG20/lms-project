@@ -1,173 +1,199 @@
-## Automated Testing
+# Cyber College LMS
 
-This project includes three types of automated tests:
-
-### 1. Backend (Django)
-
-Automated tests for the backend are provided using Django's test framework. Example test files:
-- `lms-backend/lms/tests_auto.py`
-- `lms-backend/lms/tests_simple.py`
-
-**What is tested:**
-- Student model creation and API listing
-- Course model creation and API listing
-- Health check endpoint (if present)
-
-**How to run backend tests:**
-1. Open a terminal and navigate to the backend directory:
-	```
-	cd lms-backend
-	```
-2. Run the Django test suite:
-	```
-	python manage.py test
-	```
-	You should see output indicating the number of tests run and their results (OK, FAIL, or ERROR).
-
-**Test file explanations:**
-- `tests_auto.py`: Tests student model creation and that the student list API returns expected users.
-- `tests_simple.py`: Tests simple creation and API listing for both students and courses.
-  - Each test has a docstring explaining what it does and the expected result.
-
-### 2. Deployed API Tests (Python)
-
-You can run automated tests against the deployed backend API using Python and the `requests` library. Example: `lms-backend/test_deployed_api.py`.
-
-**How to run deployed API tests:**
-1. Make sure you have Python installed.
-2. Install the `requests` library if you don't have it:
-	 ```
-	 pip install requests
-	 ```
-3. Run the test script:
-	 ```
-	 python test_deployed_api.py
-	 ```
-	 This will check the deployed API health and students endpoints. You should see output like:
-	 ```
-	 API health endpoint OK
-	 API students endpoint OK
-	 ```
-	 If any test fails, you'll see an AssertionError or a failed HTTP status code.
-
-**Test file explanation:**
-- `test_deployed_api.py`: Checks that the deployed API health endpoint returns status OK and that the students endpoint returns a list.
-
-### 3. Frontend (React)
-
-Frontend component tests are provided using Jest and React Testing Library. Example test files:
-- `lms-frontend/src/components/Course/CourseList.test.tsx`
-- `lms-frontend/src/components/Auth/Login.test.tsx`
-- `lms-frontend/src/components/Layout/Navbar.test.tsx`
-
-**How to set up and run frontend tests:**
-1. Open a terminal and navigate to the frontend directory:
-	```
-	cd lms-frontend
-	```
-2. Install dependencies (if you haven't already):
-	```
-	npm install
-	```
-3. Run the tests:
-	```
-	npx jest
-	```
-	You should see output indicating which tests passed or failed.
-
-**Test file explanations:**
-- `CourseList.test.tsx`: Checks that the CourseList component shows a loading message when first rendered. Expected: 'Loading courses...' appears.
-- `Login.test.tsx`: Checks that the Login component renders email and password fields. Expected: Both fields are present.
-- `Navbar.test.tsx`: Checks that the Navbar component renders the Home and Dashboard links. Expected: 'Home' and 'Dashboard' appear.
-
-**Note:**
-For frontend tests, make sure you have `@testing-library/jest-dom`, `jest-environment-jsdom`, and `ts-jest` installed. The test environment is set up in `src/setupTests.ts`.
+A modern Learning Management System (LMS) for students, teachers, and admins. Built with Django (backend) and React + Vite (frontend).
 
 ---
-## Wireframes
 
-The wireframes below are an example of the layout
+## Clean ASCII Wireframes
+
+### Navigation Bar
+```
+┌───────────────────────────────────────────────────────────────┐
+│ Home │ Dashboard │ Register │ Support │ [User/Profile]        │
+└───────────────────────────────────────────────────────────────┘
+```
+
+### Home Page
+```
+┌───────────────────────────────────────────────────────────────┐
+│                            Home                               │
+│ ┌───────────────────────────────────────────────────────────┐ │
+│ │ Cyber College blends academic excellence...               │ │
+│ │ [Apply Now]   [Sign Up]                                   │ │
+│ └───────────────────────────────────────────────────────────┘ │
+└───────────────────────────────────────────────────────────────┘
+```
+
+### Register Page
+```
+┌──────────────────────────── Register ─────────────────────────┐
+│ Name:     [______________]                                    │
+│ Email:    [______________]                                    │
+│ Password: [______________]                                    │
+│ [Register]   [Auto Fill]                                      │
+│ Already have an account? [Log in]                             │
+└───────────────────────────────────────────────────────────────┘
+```
 
 ### Login Page
-
 ```
------------------------------
-|        LMS Login          |
-|---------------------------|
-|  Email:  [___________]    |
-|  Password: [_________]    |
-|  [ Login ]   [ Register ] |
-|---------------------------|
-|                           |
------------------------------
+┌───────────────────────────── Login ───────────────────────────┐
+│ Email:    [______________]                                    │
+│ Password: [______________]                                    │
+│ [Login]                                                       │
+│ Don't have an account? [Register]                             │
+└───────────────────────────────────────────────────────────────┘
 ```
 
-### Dashboard Page
-
+### Student Dashboard
 ```
----------------------------------------------------
-| Navbar | Dashboard | Profile | Logout            |
----------------------------------------------------
-| Welcome, [User]!                               |
-|-------------------------------------------------|
-| [ My Courses ]  [ Enrollments ]  [ Support ]    |
-|-------------------------------------------------|
-| Recent Activity / Announcements                |
----------------------------------------------------
+┌────────────── Student Dashboard ──────────────┐
+│ Available Courses:                            │
+│ ┌────────────┬────────────┬────────────┐      │
+│ │Mathematics │ English    │ Biology    │ ...  │
+│ │[View]      │ [View]     │ [View]     │      │
+│ └────────────┴────────────┴────────────┘      │
+└───────────────────────────────────────────────┘
 ```
 
-### Course Page
-
+### Admin/Teacher Dashboard
 ```
----------------------------------------------------
-| Navbar | Dashboard | Courses | Profile | Logout  |
----------------------------------------------------
-| Course Title: [Course Name]                     |
-| Description: [Course Description]               |
-|-------------------------------------------------|
-| [ Enroll ]  [ Edit ]  [ View Students ]         |
-|-------------------------------------------------|
-| Lessons / Materials / Assignments               |
----------------------------------------------------
+┌────────────── Admin Dashboard ────────────────┐
+│ [Add Course] [Manage Users]                   │
+│ All Courses:                                 │
+│ ┌────────────┬────────────┬────────────┐      │
+│ │Mathematics │ English    │ ...        │      │
+│ │[View][Del] │ [View][Del]|            │      │
+│ └────────────┴────────────┴────────────┘      │
+└───────────────────────────────────────────────┘
+```
+
+### Manage Users Dashboard
+```
+┌────────────── Users Management ───────────────┐
+│ ID | Name    | Email           | Role   | ... │
+│----|---------|-----------------|--------|-----│
+│ 1  | admin   | admin@email.com | admin  | ... │
+│ 2  | Teacher | teacher@...     | teacher| ... │
+│... | ...     | ...             | ...    | ... │
+│ [Edit] [Delete] [Enrollments]                │
+└───────────────────────────────────────────────┘
 ```
 
 ### Profile Page
+```
+┌───────────────────────────── Profile ──────────────────────────┐
+│ [Avatar] Username                                             │
+│ [Edit Profile] [Log Out]                                      │
+│ All Courses:                                                  │
+│ ┌────────────┬────────────┬────────────┐                      │
+│ │Mathematics │ English    │ ...        │                      │
+│ │[Enrolls]   │ [Enrolls]  │            │                      │
+│ └────────────┴────────────┴────────────┘                      │
+└───────────────────────────────────────────────────────────────┘
+```
 
-```
------------------------------
-|      Profile               |
-|---------------------------|
-| Name: [___________]        |
-| Email: [___________]       |
-| Role: [Student/Teacher]    |
-|---------------------------|
-| [ Edit Profile ]           |
------------------------------
+---
+
+## Local Setup Guide
+
+### 1. Clone the Repository
+```sh
+git clone https://github.com/SebyG20/lms-project.git
+cd lms-project
 ```
 
-### Users Management (Admin)
+### 2. Backend Setup (Django)
+```sh
+cd lms-backend
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+# or
+source .venv/bin/activate  # Mac/Linux
+pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+# API at http://localhost:8000/
+```
 
-```
----------------------------------------------------
-| Navbar | Dashboard | Users | Profile | Logout    |
----------------------------------------------------
-| Users Table:                                    |
-|-------------------------------------------------|
-| | ID | Name | Email | Role | Actions |          |
-|-------------------------------------------------|
-| |  1 | ...  | ...   | ...  | Edit/Delete |      |
-|-------------------------------------------------|
-| [ Add User ]                                    |
----------------------------------------------------
-```
+### 3. Frontend Setup (React + Vite)
+```sh
+cd lms-frontend
+npm install
+# Change API URLs in frontend to http://localhost:8000/ (see src/utils/getApiBaseUrl.ts or fetch/axios calls)
 # Description
+# App at http://localhost:5173/
+```
 
+
+### 4. Running & Understanding Tests
+
+#### Backend (Django)
+- **Test location:** `lms-backend/lms/tests.py`
+- **How to run:**
+	```sh
+	python manage.py test lms
+	```
+- **What is tested:**
+	- **CourseApiTests**
+		- `test_course_list`: Checks that the course list API returns status 200 and includes a test course. _Expected: 200 OK, course title in response._
+		- `test_course_create`: Checks that a new course can be created via the API. _Expected: 201 CREATED, correct title in response._
+		- `test_course_delete`: Checks that a course can be deleted by teacher. _Expected: 204 NO CONTENT._
+	- **StudentApiTests**
+		- `test_student_register`: Checks that a new student can register. _Expected: 201 CREATED, correct email in response._
+		- `test_student_login`: Checks that a student can log in. _Expected: 200 OK, correct email in response._
+- **Expected results:** All tests should pass with the expected status codes and data as described above.
+
+#### Frontend (React)
+- **Test location:**
+	- Main tests: `lms-frontend/src/components/` (e.g., `Footer.test.tsx`, `NavbarMocked.test.tsx`)
+	- Test setup: `lms-frontend/setupTests.ts`, `jest.config.cjs`, `babel.config.cjs`
+- **How to run:**
+	```sh
+	npm test
+	```
+- **What is tested:**
+	- **Footer.test.tsx**: Checks that the footer renders and contains the copyright.
+		- _Expected: Footer is in the document, copyright text is present._
+	- **NavbarMocked.test.tsx**: Checks that the Navbar renders with mocked router links.
+		- _Expected: Navbar is in the document, navigation links are present._
+	- (Other tests may exist for CourseList, etc. See `src/components/` for details.)
+- **Expected results:** All tests should pass, confirming that UI components render and behave as expected.
+
+**Note:**
+- Frontend tests use React Testing Library and Jest. Some ESM/React Router v7+ issues are handled by mocking in test files.
+- Backend tests use Django's APITestCase for API endpoint validation.
+
+### 5. Default Accounts
+- Use the superuser you created for admin access.
+- Register as a student or teacher via the Register page.
+
+### 6. Troubleshooting
+- If you see CORS errors, ensure `django-cors-headers` is installed and configured in `settings.py`.
+- If migrations fail, delete the `db.sqlite3` file and rerun migrations.
+- For ESM/React Router issues in tests, see the `setupTests.ts` and `jest.config.cjs` for proper mocks.
+
+---
+
+## Features
+- Student, Teacher, and Admin roles
+- Course management (add, edit, delete, enroll)
+- User registration, login, and profile management
+- Responsive, modern UI
+- Automated tests for backend and frontend
+
+---
+
+ 
 A Learning Management System (LMS) built with a Django backend and a React + Vite frontend. This project allows users to manage courses, enrollments, profiles, and more. This can be viewed by clicking [here](https://lms-frontendd.netlify.app/). If you wish to view everything in more detail, download lms-frontend and lms-backend and follow the instructions in [Backend Setup](#backend-setup) and [Frontend Setup](#frontend-setup)
 
 ## Table of Contents
 - [Features](#features)
 - [Deployment](#deployment)
 - [Frontend Setup](#frontend-setup)
+- [Database](#database)
 - [Development](#development)
 - [Extra Information](#extra-information)
 
@@ -188,104 +214,6 @@ lms-project/
 ├── others
 ```
 
-
-## Local Setup
-
-### How to Run Locally (Detailed)
-To run the LMS locally, use the existing `lms-backend` and `lms-frontend` folders. You must update API calls in the frontend code to use your local backend server.
-
-#### What You Need to Change for Local Development
-
-1. **API URLs:**
-	- In the frontend code (usually in `src/pages` or `src/components`), find all API calls that use a deployed URL (such as `https://lms-backend-qeui.onrender.com`).
-	- Change these URLs to use your local backend: `http://localhost:8000`.
-	- Example:
-	  ```js
-	  // Change this:
-	  const API_BASE = 'https://lms-backend-qeui.onrender.com';
-	  // To this:
-	  const API_BASE = 'http://localhost:8000';
-	  ```
-	- You may also use an environment variable (like `VITE_API_BASE_URL`) and set it to `http://localhost:8000` for local development.
-
-2. **Install Dependencies:**
-	- For backend: `pip install -r requirements.txt` in `lms-backend`
-	- For frontend: `npm install` in `lms-frontend`
-
-3. **Run Servers Locally:**
-	- Backend: `python manage.py runserver` (should run at `http://localhost:8000`)
-	- Frontend: `npm run dev` (should run at `http://localhost:5173`)
-
-4. **Check for Port Conflicts:**
-	- Make sure nothing else is running on ports 8000 (backend) or 5173 (frontend).
-
-5. **Database:**
-	- The backend uses its own SQLite database (`lms.db`). No changes needed unless you want to reset or migrate.
-
-6. **Environment Variables:**
-	- If you use `.env` files, make sure they point to local URLs and settings.
-
-7. **Troubleshooting:**
-	- If you get errors about missing modules, run `npm install` or `pip install` again.
-	- If you see CORS errors, make sure your backend allows requests from `localhost:5173`.
-
----
-
-### Backend (Django)
-1. Open a terminal and navigate to the backend directory:
-	```
-	cd lms-backend
-	```
-2. (Optional) Create and activate a Python virtual environment:
-	```
-	python -m venv .venv
-	.venv\Scripts\activate  # On Windows
-	```
-3. Install dependencies:
-	```
-	pip install -r requirements.txt
-	```
-4. Apply migrations (if needed):
-	```
-	python manage.py migrate
-	```
-5. (Optional) Create a superuser:
-	```
-	python manage.py createsu
-	```
-	This will create a superuser with:
-	- Username: admin
-	- Email: admin@example.com
-	- Password: yourpassword
-6. Start the backend server:
-	```
-	python manage.py runserver
-	```
-	The backend will be available at http://localhost:8000
-
-### Frontend (React + Vite)
-1. Open a new terminal and navigate to the frontend directory:
-	```
-	cd lms-frontend
-	```
-2. Install dependencies:
-	```
-	npm install
-	```
-3. Start the frontend development server:
-	```
-	npm run dev
-	```
-	The frontend will be available at http://localhost:5173
-
-### Accessing the App
-
-Visit http://localhost:5173 in your browser. Log in with the superuser credentials you created, or register a new account for testing.
-
----
-
----
-
 ## Deployment
 The web application is already deployed and can be accessed at [lms-frontendd.netlify.app](https://lms-frontendd.netlify.app/). This is the same link as the one in [description](#description).
 
@@ -304,4 +232,3 @@ The web application is already deployed and can be accessed at [lms-frontendd.ne
 - The full database can be seen in admin dashboard by logging into a admin account.
 - It is normal to not get anything since the Web Server acts simply connects the frontend to the database.
 - The web app could not function right away, this simply means the server isn't up, just wait for the server to start up and everything should work.
-- The deployed version and local version are not synched together since they run on different places.
