@@ -69,7 +69,9 @@ A modern Learning Management System (LMS) for students, teachers, and admins. Bu
 ```
 
 ### Manage Users Dashboard
-```
+<div style="overflow-x: auto; max-width: 100vw;">
+
+<pre>
 ┌────────────── Users Management ───────────────┐
 │ ID | Name    | Email           | Role   | ... │
 │----|---------|-----------------|--------|-----│
@@ -78,7 +80,10 @@ A modern Learning Management System (LMS) for students, teachers, and admins. Bu
 │... | ...     | ...             | ...    | ... │
 │ [Edit] [Delete] [Enrollments]                │
 └───────────────────────────────────────────────┘
-```
+</pre>
+
+<sub><i>Scroll horizontally if needed</i></sub>
+</div>
 
 ### Profile Page
 ```

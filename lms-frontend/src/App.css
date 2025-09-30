@@ -1,3 +1,23 @@
+/* Make tables horizontally scrollable on small screens */
+.table-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+@media (max-width: 600px) {
+  .table-scroll-wrapper {
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    max-width: 100vw;
+  }
+  table {
+    min-width: 500px;
+  }
+}
 html, body, #root {
   width: 100vw;
   min-width: 0;
