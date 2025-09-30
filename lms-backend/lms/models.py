@@ -9,7 +9,7 @@ class Course(models.Model):
 
 	class Meta:
 		db_table = 'courses'
-		managed = False  # Don't let Django manage the table (no migrations)
+		managed = True  # Let Django manage the table
 
 	def __str__(self):
 		return self.Title

@@ -1,35 +1,19 @@
-### Deployed API Tests (Python)
-
-You can run automated tests against the deployed backend API using Python and the `requests` library. Example tests are in `lms-backend/test_deployed_api.py`.
-
-**To run deployed API tests:**
-
-1. Make sure you have Python installed.
-2. Install the `requests` library if you don't have it:
-	```
-	pip install requests
-	```
-3. Run the test script:
-	```
-	python test_deployed_api.py
-	```
-	This will check the deployed API health and students endpoints. You should see output like:
-	```
-	API health endpoint OK
-	API students endpoint OK
-	```
-
-If any test fails, you'll see an AssertionError or a failed HTTP status code.
-
----
 ## Automated Testing
 
-### Backend (Django)
+This project includes three types of automated tests:
 
-Automated tests are provided for the backend using Django's test framework. Example tests are in `lms-backend/lms/tests_auto.py`.
+### 1. Backend (Django)
 
-**To run all backend tests:**
+Automated tests for the backend are provided using Django's test framework. Example test files:
+- `lms-backend/lms/tests_auto.py`
+- `lms-backend/lms/tests_simple.py`
 
+**What is tested:**
+- Student model creation and API listing
+- Course model creation and API listing
+- Health check endpoint (if present)
+
+**How to run backend tests:**
 1. Open a terminal and navigate to the backend directory:
 	```
 	cd lms-backend
@@ -38,9 +22,66 @@ Automated tests are provided for the backend using Django's test framework. Exam
 	```
 	python manage.py test
 	```
-	This will automatically discover and run all tests in files named `test*.py` (including `tests_auto.py`).
+	You should see output indicating the number of tests run and their results (OK, FAIL, or ERROR).
 
-You should see output indicating the number of tests run and their results (OK, FAIL, or ERROR).
+**Test file explanations:**
+- `tests_auto.py`: Tests student model creation and that the student list API returns expected users.
+- `tests_simple.py`: Tests simple creation and API listing for both students and courses.
+  - Each test has a docstring explaining what it does and the expected result.
+
+### 2. Deployed API Tests (Python)
+
+You can run automated tests against the deployed backend API using Python and the `requests` library. Example: `lms-backend/test_deployed_api.py`.
+
+**How to run deployed API tests:**
+1. Make sure you have Python installed.
+2. Install the `requests` library if you don't have it:
+	 ```
+	 pip install requests
+	 ```
+3. Run the test script:
+	 ```
+	 python test_deployed_api.py
+	 ```
+	 This will check the deployed API health and students endpoints. You should see output like:
+	 ```
+	 API health endpoint OK
+	 API students endpoint OK
+	 ```
+	 If any test fails, you'll see an AssertionError or a failed HTTP status code.
+
+**Test file explanation:**
+- `test_deployed_api.py`: Checks that the deployed API health endpoint returns status OK and that the students endpoint returns a list.
+
+### 3. Frontend (React)
+
+Frontend component tests are provided using Jest and React Testing Library. Example test files:
+- `lms-frontend/src/components/Course/CourseList.test.tsx`
+- `lms-frontend/src/components/Auth/Login.test.tsx`
+- `lms-frontend/src/components/Layout/Navbar.test.tsx`
+
+**How to set up and run frontend tests:**
+1. Open a terminal and navigate to the frontend directory:
+	```
+	cd lms-frontend
+	```
+2. Install dependencies (if you haven't already):
+	```
+	npm install
+	```
+3. Run the tests:
+	```
+	npx jest
+	```
+	You should see output indicating which tests passed or failed.
+
+**Test file explanations:**
+- `CourseList.test.tsx`: Checks that the CourseList component shows a loading message when first rendered. Expected: 'Loading courses...' appears.
+- `Login.test.tsx`: Checks that the Login component renders email and password fields. Expected: Both fields are present.
+- `Navbar.test.tsx`: Checks that the Navbar component renders the Home and Dashboard links. Expected: 'Home' and 'Dashboard' appear.
+
+**Note:**
+For frontend tests, make sure you have `@testing-library/jest-dom`, `jest-environment-jsdom`, and `ts-jest` installed. The test environment is set up in `src/setupTests.ts`.
 
 ---
 ## Wireframes
